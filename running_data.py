@@ -29,13 +29,26 @@ def RunInfo(a):
 		f = open("past_runs.txt", "a") # opens and appends to file
 	elif (a == "new"):
 		f = open("past_runs.txt", "w")
-		f.write("DATE YYYY/MM/DD) " + "DISTANE (KM) " + "TIME (HH:MM:SS) \n")
-		f.write("---------------------------------------------\n")
+		f.write("DATE (YYYY/MM/DD) | " + "DISTANE (KM) | " + "TIME (HH:MM:SS) \n")
+		f.write("--------------------------------------------------\n")
 		f.write("\n")
 
 	f.write(run_date + " " + run_distance + " " + run_time + "\n") 
 	f.close
 	return
+
+def ReadData():
+	f = open("past_runs.txt", "r")
+	column_title = f.readline()
+	underline = f.readline()
+	blank_line = f.readline
+	for line in f:
+			line = line.strip() 
+			columns = line.split(" ") 
+
+	print "Data read"
+	return
+			
 
 
 print "----------------------------------"
@@ -45,12 +58,13 @@ print "----------------------------------\n"
 add_run = raw_input("Do you want to add a new run? (y/n) \npress 'n' if you want to just see your statistics\n\n")
 
 if (add_run == "y" or add_run == "Y"):
-	print "yes detected"
+	#print "yes detected"
 	GetFile()
+	ReadData()
 	# Read file
 else:
-	print "not a yes"
-	# Just want our statistics
+	#print "not a yes"
+	ReadData()
 	# Read file
 
 
