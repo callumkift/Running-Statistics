@@ -10,15 +10,12 @@
 import os.path
 
 def GetFile():
-	### Get's file to add runs to.
+	### Check's to see if file exists
 	if (os.path.isfile("past_runs.txt")):
-		print "file exists"
-		#f = open("past_runs.txt", "a") # opens and appends to file
+		#print "file exists"
 		RunInfo("previous")
 	else:
-		# Creates file
-		print "This seems to be your first run - congratulations."
-		#f = open("past_runs.txt", "w")
+		#print "This seems to be your first run - congratulations."
 		RunInfo("new")
 	return
 
@@ -32,10 +29,14 @@ def RunInfo(a):
 		f = open("past_runs.txt", "a") # opens and appends to file
 	elif (a == "new"):
 		f = open("past_runs.txt", "w")
+		f.write("DATE YYYY/MM/DD) " + "DISTANE (KM) " + "TIME (HH:MM:SS) \n")
+		f.write("---------------------------------------------\n")
+		f.write("\n")
 
 	f.write(run_date + " " + run_distance + " " + run_time + "\n") 
 	f.close
 	return
+
 
 print "----------------------------------"
 print "Welcome to your running statistics"
@@ -46,9 +47,6 @@ add_run = raw_input("Do you want to add a new run? (y/n) \npress 'n' if you want
 if (add_run == "y" or add_run == "Y"):
 	print "yes detected"
 	GetFile()
-	# Check to see if there is a file
-	# If not create it
-	# Input data
 	# Read file
 else:
 	print "not a yes"
