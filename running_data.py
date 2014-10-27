@@ -12,7 +12,7 @@ import re
 from datetime import date, time, timedelta
 from array import array
 import matplotlib.pyplot as plt
-from matplotlib.dates import date2num
+import matplotlib.dates as mdates
 
 # Defining variables
 dateArray = []
@@ -90,12 +90,14 @@ def CalculateTotal():
 		totTime += Hour2Seconds(timeArray[i])
 	avgDist = totDist/totRuns
 
-	dates = [date2num(day) for day in dateArray]
+	dates = [mdates.date2num(day) for day in dateArray]
 	#dates = [datetime.strptime(str(int(day)),'%Y%m%d') for day in monthDate]
 	plt.plot(dates, distanceArray, 'bo')
 	plt.title(r'All runs')
 	plt.xlabel(r'Date')
 	plt.ylabel(r'Distance (km)')
+	plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%d/%m/%Y'))
+	plt.gcf().autofmt_xdate()
 	plt.show()
 
 	return totDist, totRuns, avgDist, Seconds2Hours(totTime)
@@ -134,11 +136,13 @@ def ThisMonth():
 	monthTotTime = Seconds2Hours(monthTotSecs)
 	monthAvgDist = monthTotDist/monthTotRuns
 
-	dates = [date2num(day) for day in monthDate]
+	dates = [mdates.date2num(day) for day in monthDate]
 	plt.plot(dates, monthDistance, 'bo')
 	plt.title(r'This months runs')
 	plt.xlabel(r'Date')
 	plt.ylabel(r'Distance (km)')
+	plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%d/%m/%Y'))
+	plt.gcf().autofmt_xdate()
 	plt.show()
 
 	return monthTotDist, monthTotRuns, monthAvgDist, monthTotTime
