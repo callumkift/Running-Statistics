@@ -9,8 +9,10 @@
 ##########
 import os.path
 import re
-from datetime import date, time
+from datetime import date, time, timedelta
 from array import array
+import matplotlib.pyplot as plt
+from matplotlib.dates import date2num
 
 # Defining variables
 dateArray = []
@@ -87,6 +89,37 @@ def CalculateTotal():
 	avgDist = totDist/totRuns
 	return totDist, totRuns, avgDist
 
+def ThisMonth():
+	#today = datetime.date.today()
+	monthDate = []
+	monthDistance = []
+	monthTime = []
+
+	# monthTotDist = 0
+	# monthTotTime = time(0, 0, 0, 0)
+
+	#print "poo", monthTotTime
+
+	for i in range(len(dateArray)):
+		if (date.today().month == dateArray[i].month):
+			monthDate.append(dateArray[i])
+			monthDistance.append(distanceArray[i])
+			monthTime.append(timeArray[i])
+
+			# monthTotDist += distanceArray[i]
+			# monthTotTime += timedelta(timeArray[i].hour, timeArray[i].minute, timeArray[i].second, 0)
+
+	dates = [date2num(day) for day in monthDate]
+	#dates = [datetime.strptime(str(int(day)),'%Y%m%d') for day in monthDate]
+	plt.plot(dates, monthDistance, 'bo')
+	plt.title(r'This months runs')
+	plt.xlabel(r'Date')
+	plt.ylabel(r'Distance')
+	plt.show()
+
+	#print monthTotTime, monthTotDist
+	return
+
 
 
 			
@@ -116,4 +149,4 @@ if __name__ == '__main__':
 	print "You have ran a total of %d times" %numberOfRuns
 	print "Meaning you run an average of %.2fkms" %averageDistance
 
-
+	ThisMonth()
