@@ -19,3 +19,8 @@ Initial plan of script
 		-	See your best average speed for certain distances, the one you just ran
 
 5) These should be represented in a mixture of plots and text
+
+
+Stats would like to see
+	Comparing total distances for each month
+	Comparing mins/km for each month
