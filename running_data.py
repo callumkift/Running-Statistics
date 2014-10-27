@@ -8,7 +8,10 @@
 #
 ##########
 import os.path
+import re
+from datetime import date, time
 from array import array
+
 
 def AddRun():
 	add_run = raw_input("Do you want to add a new run? (y/n)\n")
@@ -37,13 +40,13 @@ def RunInfo(a):
 		f = open("past_runs.txt", "a") # opens and appends to file
 	elif (a == "new"):
 		f = open("past_runs.txt", "w")
-		f.write("DATE (YYYY/MM/DD) | " + "DISTANE (KM) | " + "TIME (HH:MM:SS) \n")
+		f.write("DATE (DD/MM/YYYY) | " + "DISTANE (KM) | " + "TIME (HH:MM:SS) \n")
 		f.write("--------------------------------------------------\n")
 		f.write("\n")
 
-	run_date = raw_input("\nWhat was the date of the run? (YYYYMMDD)\n")
+	run_date = raw_input("\nWhat was the date of the run? (DD/MM/YYYY)\n")
 	run_distance = raw_input("\nHow far did you run? (km)\n")
-	run_time = raw_input("\nHow long did you run for? (mins)\n") 
+	run_time = raw_input("\nHow long did you run for? (HH:MM_SS)\n") 
 
 	f.write(run_date + " " + run_distance + " " + run_time + "\n") 
 	f.close
@@ -57,11 +60,12 @@ def ReadData():
 		blank_line = f.readline()
 		for line in f:
 				line = line.strip() 
-				column = line.split(" ")
-				dateArray.append(float(column[0]))
-				distanceArray.append(float(column[1]))
-				timeArray.append(float(column[2]))
-		print "Data read"
+				column = re.split(" |/|:", line)
+				if (len(column) == 7):
+					dateArray.append(date(int(column[2]), int(column[1]), int(column[0])))
+					distanceArray.append(float(column[3]))
+					timeArray.append(time(int(column[4]), int(column[5]), int(column[6]),0))
+		print "Data read", len(dateArray), len(timeArray)
 	else:
 		print "\n-- It seems that you have no previous runs saved."
 		print "--",
@@ -76,9 +80,9 @@ if __name__ == '__main__':
 	print "Welcome to your running statistics"
 	print "----------------------------------\n"
 
-	dateArray = array ('f')
-	distanceArray = array ('f')
-	timeArray = array ('f')
+	dateArray = []
+	distanceArray = []
+	timeArray = []
 
 	AddRun()
 	ViewStats()
