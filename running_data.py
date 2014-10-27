@@ -12,6 +12,11 @@ import re
 from datetime import date, time
 from array import array
 
+# Defining variables
+dateArray = []
+distanceArray = []
+timeArray = []
+
 
 def AddRun():
 	add_run = raw_input("Do you want to add a new run? (y/n)\n")
@@ -65,13 +70,24 @@ def ReadData():
 					dateArray.append(date(int(column[2]), int(column[1]), int(column[0])))
 					distanceArray.append(float(column[3]))
 					timeArray.append(time(int(column[4]), int(column[5]), int(column[6]),0))
-		print "Data read", len(dateArray), len(timeArray)
+		# print "Data read", len(distanceArray)
 	else:
 		print "\n-- It seems that you have no previous runs saved."
 		print "--",
 		AddRun()
 		ViewStats()
 	return
+
+def CalculateTotal():
+	totDist = 0
+	totRuns = 0
+	for i in range(len(distanceArray)):
+		totDist += distanceArray[i]
+		totRuns += 1
+	avgDist = totDist/totRuns
+	return totDist, totRuns, avgDist
+
+
 
 			
 if __name__ == '__main__':
@@ -80,11 +96,24 @@ if __name__ == '__main__':
 	print "Welcome to your running statistics"
 	print "----------------------------------\n"
 
+	# Defining variables
 	dateArray = []
 	distanceArray = []
 	timeArray = []
 
 	AddRun()
 	ViewStats()
+
+	print "\n----------------------------------"
+	print "----------------------------------"
+	print "----------- STATISTICS -----------"
+	print "----------------------------------"
+	print "----------------------------------\n\n"
+
+	totalDistance, numberOfRuns, averageDistance = CalculateTotal()
+
+	print "Total distance: %.2fkms" %totalDistance
+	print "You have ran a total of %d times" %numberOfRuns
+	print "Meaning you run an average of %.2fkms" %averageDistance
 
 
