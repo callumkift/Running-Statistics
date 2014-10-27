@@ -8,6 +8,7 @@
 #
 ##########
 import os.path
+from array import array
 
 def AddRun():
 	add_run = raw_input("Do you want to add a new run? (y/n)\n")
@@ -40,9 +41,9 @@ def RunInfo(a):
 		f.write("--------------------------------------------------\n")
 		f.write("\n")
 
-	run_date = raw_input("\nWhat was the date of the run? (YYYY/MM/DD)\n")
-	run_distance = raw_input("\nHow far did you run? (x.yz km)\n")
-	run_time = raw_input("\nHow long did you run for? (HH:MM:SS)\n") 
+	run_date = raw_input("\nWhat was the date of the run? (YYYYMMDD)\n")
+	run_distance = raw_input("\nHow far did you run? (km)\n")
+	run_time = raw_input("\nHow long did you run for? (mins)\n") 
 
 	f.write(run_date + " " + run_distance + " " + run_time + "\n") 
 	f.close
@@ -53,15 +54,19 @@ def ReadData():
 		f = open("past_runs.txt", "r")
 		column_title = f.readline()
 		underline = f.readline()
-		blank_line = f.readline
+		blank_line = f.readline()
 		for line in f:
 				line = line.strip() 
-				columns = line.split(" ") 
+				column = line.split(" ")
+				dateArray.append(float(column[0]))
+				distanceArray.append(float(column[1]))
+				timeArray.append(float(column[2]))
 		print "Data read"
 	else:
 		print "\n-- It seems that you have no previous runs saved."
 		print "--",
 		AddRun()
+		ViewStats()
 	return
 
 			
@@ -71,8 +76,11 @@ if __name__ == '__main__':
 	print "Welcome to your running statistics"
 	print "----------------------------------\n"
 
+	dateArray = array ('f')
+	distanceArray = array ('f')
+	timeArray = array ('f')
+
 	AddRun()
 	ViewStats()
-
 
 
