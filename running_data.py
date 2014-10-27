@@ -83,11 +83,28 @@ def ReadData():
 def CalculateTotal():
 	totDist = 0
 	totRuns = 0
+	totTime = 0
 	for i in range(len(distanceArray)):
 		totDist += distanceArray[i]
 		totRuns += 1
+		totTime += Hour2Seconds(timeArray[i])
+		
 	avgDist = totDist/totRuns
-	return totDist, totRuns, avgDist
+	return totDist, totRuns, avgDist, Seconds2Hours(totTime)
+
+def Hour2Seconds(fullTime):
+	secs = fullTime.second
+	mins = fullTime.minute
+	hours = fullTime.hour
+	totalSeconds = secs + (mins*60) + (hours*3600)
+	return totalSeconds
+
+def Seconds2Hours(secs):
+	hour = int(secs/3600)
+	minutes = secs%hour
+	seconds = minutes%60
+	timeform = time(hour, minutes, seconds, 0)
+	return timeform
 
 def ThisMonth():
 	#today = datetime.date.today()
@@ -143,10 +160,11 @@ if __name__ == '__main__':
 	print "----------------------------------"
 	print "----------------------------------\n\n"
 
-	totalDistance, numberOfRuns, averageDistance = CalculateTotal()
+	totalDistance, numberOfRuns, averageDistance, totalRunTime = CalculateTotal()
 
-	print "Total distance: %.2fkms" %totalDistance
-	print "You have ran a total of %d times" %numberOfRuns
-	print "Meaning you run an average of %.2fkms" %averageDistance
+	print "You have run a total distance of %.2fkms" %totalDistance
+	print "You have run a total of %d times" %numberOfRuns
+	print "You have run for a total time of", totalRunTime
+	print "You run an average of %.2fkms" %averageDistance
 
 	ThisMonth()
