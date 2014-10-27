@@ -43,9 +43,9 @@ def GetFile():
 
 def RunInfo(a):
 	### User inputs data and it writes to file
-	if (a == "previous"):
-		f = open("past_runs.txt", "a") # opens and appends to file
-	elif (a == "new"):
+	if (a == "previous"): # finds file and opens it
+		f = open("past_runs.txt", "a") 
+	elif (a == "new"): # creates file if it doesn't exist
 		f = open("past_runs.txt", "w")
 		f.write("DATE (DD/MM/YYYY) | " + "DISTANE (KM) | " + "TIME (HH:MM:SS) \n")
 		f.write("--------------------------------------------------\n")
@@ -88,8 +88,16 @@ def CalculateTotal():
 		totDist += distanceArray[i]
 		totRuns += 1
 		totTime += Hour2Seconds(timeArray[i])
-		
 	avgDist = totDist/totRuns
+
+	dates = [date2num(day) for day in dateArray]
+	#dates = [datetime.strptime(str(int(day)),'%Y%m%d') for day in monthDate]
+	plt.plot(dates, distanceArray, 'bo')
+	plt.title(r'All runs')
+	plt.xlabel(r'Date')
+	plt.ylabel(r'Distance (km)')
+	plt.show()
+
 	return totDist, totRuns, avgDist, Seconds2Hours(totTime)
 
 def Hour2Seconds(fullTime):
@@ -107,35 +115,33 @@ def Seconds2Hours(secs):
 	return timeform
 
 def ThisMonth():
-	#today = datetime.date.today()
 	monthDate = []
 	monthDistance = []
 	monthTime = []
 
-	# monthTotDist = 0
-	# monthTotTime = time(0, 0, 0, 0)
-
-	#print "poo", monthTotTime
+	monthTotDist = 0
+	monthTotSecs = 0
+	monthTotRuns = 0 
 
 	for i in range(len(dateArray)):
 		if (date.today().month == dateArray[i].month):
 			monthDate.append(dateArray[i])
 			monthDistance.append(distanceArray[i])
 			monthTime.append(timeArray[i])
-
-			# monthTotDist += distanceArray[i]
-			# monthTotTime += timedelta(timeArray[i].hour, timeArray[i].minute, timeArray[i].second, 0)
+			monthTotDist += distanceArray[i]
+			monthTotSecs += Hour2Seconds(timeArray[i])
+			monthTotRuns += 1
+	monthTotTime = Seconds2Hours(monthTotSecs)
+	monthAvgDist = monthTotDist/monthTotRuns
 
 	dates = [date2num(day) for day in monthDate]
-	#dates = [datetime.strptime(str(int(day)),'%Y%m%d') for day in monthDate]
 	plt.plot(dates, monthDistance, 'bo')
 	plt.title(r'This months runs')
 	plt.xlabel(r'Date')
-	plt.ylabel(r'Distance')
+	plt.ylabel(r'Distance (km)')
 	plt.show()
 
-	#print monthTotTime, monthTotDist
-	return
+	return monthTotDist, monthTotRuns, monthAvgDist, monthTotTime
 
 
 
@@ -158,13 +164,22 @@ if __name__ == '__main__':
 	print "----------------------------------"
 	print "----------- STATISTICS -----------"
 	print "----------------------------------"
-	print "----------------------------------\n\n"
+	print "----------------------------------\n"
 
 	totalDistance, numberOfRuns, averageDistance, totalRunTime = CalculateTotal()
 
+	print "\n----- Total -----"
+	print "-----------------"
 	print "You have run a total distance of %.2fkms" %totalDistance
 	print "You have run a total of %d times" %numberOfRuns
-	print "You have run for a total time of", totalRunTime
 	print "You run an average of %.2fkms" %averageDistance
+	print "You have run for a total time of", totalRunTime
 
-	ThisMonth()
+	monthTotDist, monthTotRuns, monthAvgDist, monthTotTime = ThisMonth()
+
+	print "\n----- This month -----"
+	print "----------------------"
+	print "You have run a total distance of %.2fkms" %monthTotDist
+	print "You have run a total of %d times" %monthTotRuns
+	print "You run an average of %.2fkms" %monthAvgDist
+	print "You have run for a total time of", monthTotTime
