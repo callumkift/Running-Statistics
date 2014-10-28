@@ -14,11 +14,6 @@ from array import array
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 
-# Defining variables
-dateArray = []
-distanceArray = []
-timeArray = []
-
 
 def AddRun():
 	add_run = raw_input("Do you want to add a new run? (y/n)\n")
@@ -81,28 +76,17 @@ def ReadData():
 	return
 
 def CalculateTotal():
+
 	totDist = 0
 	totRuns = 0
 	totTime = 0
+
 	for i in range(len(distanceArray)):
 		totDist += distanceArray[i]
 		totRuns += 1
 		totTime += Hour2Seconds(timeArray[i])
 	avgDist = totDist/totRuns
 	avgPace = totTime/totDist
-
-	dates = [mdates.date2num(day) for day in dateArray]
-	#dates = [datetime.strptime(str(int(day)),'%Y%m%d') for day in monthDate]
-	plt.plot(dates, distanceArray, 'bo')
-	plt.title(r'All runs')
-	plt.xlabel(r'Date')
-	plt.ylabel(r'Distance (km)')
-	plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%d/%m/%Y'))
-	plt.gcf().autofmt_xdate()
-	plt.show()
-
-	print avgPace
-
 	return totDist, totRuns, avgDist, Seconds2Hours(totTime), Seconds2Hours(avgPace)
 
 def Hour2Seconds(fullTime):
@@ -144,19 +128,17 @@ def ThisMonth():
 	
 	monthAvgDist = monthTotDist/monthTotRuns
 	monthAvgPace = monthTotSecs/monthTotDist
+	return monthDate, monthDistance, monthTotDist, monthTotRuns, monthAvgDist, Seconds2Hours(monthTotSecs), Seconds2Hours(monthAvgPace)
 
-	dates = [mdates.date2num(day) for day in monthDate]
-	plt.plot(dates, monthDistance, 'bo')
-	plt.title(r'This months runs')
-	plt.xlabel(r'Date')
-	plt.ylabel(r'Distance (km)')
+def RunDistGraphs(dateList, distList, graph_title, graph_xaxis, graph_yaxis):
+	dates = [mdates.date2num(day) for day in dateList]
+	plt.plot(dates, distList, 'bo')
+	plt.title(graph_title)
+	plt.xlabel(graph_xaxis)
+	plt.ylabel(graph_yaxis)
 	plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%d/%m/%Y'))
 	plt.gcf().autofmt_xdate()
 	plt.show()
-
-	return monthTotDist, monthTotRuns, monthAvgDist, Seconds2Hours(monthTotSecs), Seconds2Hours(monthAvgPace)
-
-
 
 			
 if __name__ == '__main__':
@@ -165,7 +147,7 @@ if __name__ == '__main__':
 	print "Welcome to your running statistics"
 	print "----------------------------------\n"
 
-	# Defining variables
+	# Defining lists that contain all run data
 	dateArray = []
 	distanceArray = []
 	timeArray = []
@@ -179,8 +161,8 @@ if __name__ == '__main__':
 	print "----------------------------------"
 	print "----------------------------------\n"
 
+	# Calculate total statistics
 	totalDistance, totalNumberOfRuns, totalAverageDistance, totalRunTime, totalAveragePace = CalculateTotal()
-
 	print "\n----- Total -----"
 	print "-----------------"
 	print "You have run a total distance of %.2fkms" %totalDistance
@@ -188,9 +170,10 @@ if __name__ == '__main__':
 	print "You run an average of %.2fkms" %totalAverageDistance
 	print "You have run for a total of %s hrs" %totalRunTime.isoformat()
 	print "You run with an average pace of %s hrs/km" %totalAveragePace.isoformat()
+	RunDistGraphs(dateArray, distanceArray, "All time runs", "Date", "Distance (km)")
 
-	monthTotDist, monthTotRuns, monthAvgDist, monthTotTime, monthAvgPace = ThisMonth()
-
+	# Calculate current month's statistics
+	monthDateList, monthDistanceList, monthTotDist, monthTotRuns, monthAvgDist, monthTotTime, monthAvgPace = ThisMonth()
 	print "\n----- This month -----"
 	print "----------------------"
 	print "You have run a total distance of %.2fkms" %monthTotDist
@@ -198,3 +181,4 @@ if __name__ == '__main__':
 	print "You run an average of %.2fkms" %monthAvgDist
 	print "You have run for a total of %s hrs" %monthTotTime.isoformat()
 	print "You have run with an average pace of %s hrs/km" %monthAvgPace.isoformat()
+	RunDistGraphs(monthDateList, monthDistanceList, "Runs this month", "Date", "Distance (km)")
