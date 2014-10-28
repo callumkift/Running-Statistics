@@ -16,31 +16,27 @@ import matplotlib.dates as mdates
 
 
 def AddRun():
+	"""Asks user if they want to add a new run, if yes then it runs WriteRunToFile()"""
 	add_run = raw_input("Do you want to add a new run? (y/n)\n")
 	if (add_run == "y" or add_run == "Y"):
 		#print "yes detected"
-		GetFile()
+		WriteRunToFile()
 
 def ViewStats():
+	"""Asks user if they want to view their stats, if yes then it runs ReadData()"""
 	view_stats = raw_input("\nDo you want to view your stats? (y/n)\n")
 	if (view_stats == "y" or view_stats == "Y"):
 		ReadData()
 
-def GetFile():
-	### Check's to see if file exists
-	if (os.path.isfile("past_runs.txt")):
-		#print "file exists"
-		RunInfo("previous")
-	else:
-		#print "This seems to be your first run - congratulations."
-		RunInfo("new")
-	return
 
-def RunInfo(a):
-	### User inputs data and it writes to file
-	if (a == "previous"): # finds file and opens it
+def WriteRunToFile():
+	""""Runs when user wants to add a run to file. Finds the file and then asks the
+		user to input data and writes to file. If it is their first run, then it will
+		create the file before asking the user for their run data and writing it to
+		file."""
+	if (os.path.isfile("past_runs.txt")): # finds file and opens it
 		f = open("past_runs.txt", "a") 
-	elif (a == "new"): # creates file if it doesn't exist
+	else: # creates file if it doesn't exist
 		f = open("past_runs.txt", "w")
 		f.write("DATE (DD/MM/YYYY) | " + "DISTANE (KM) | " + "TIME (HH:MM:SS) \n")
 		f.write("--------------------------------------------------\n")
@@ -55,6 +51,9 @@ def RunInfo(a):
 	return
 
 def ReadData():
+	"""Runs when user wants to see their stats. This reads the user's run info and 
+		stores it in a list. If run when no data exists, it will ask user to add data
+		before running again."""
 	if (os.path.isfile("past_runs.txt")):
 		f = open("past_runs.txt", "r")
 		column_title = f.readline()
@@ -72,11 +71,11 @@ def ReadData():
 		print "\n-- It seems that you have no previous runs saved."
 		print "--",
 		AddRun()
-		ViewStats()
+		ReadData()
 	return
 
 def CalculateTotal():
-
+	"""This calculates the statistics for all runs."""
 	totDist = 0
 	totRuns = 0
 	totTime = 0
@@ -90,6 +89,7 @@ def CalculateTotal():
 	return totDist, totRuns, avgDist, Seconds2Hours(totTime), Seconds2Hours(avgPace)
 
 def Hour2Seconds(fullTime):
+	"""Converts time format (hh, mm, ss) into seconds."""
 	secs = fullTime.second
 	mins = fullTime.minute
 	hours = fullTime.hour
@@ -97,6 +97,7 @@ def Hour2Seconds(fullTime):
 	return totalSeconds
 
 def Seconds2Hours(secs):
+	"""Converts seconds into time formt (hh, mm, ss)."""
 	if (secs > 3600):
 		hour = int(secs/3600)
 		minutes = secs%hour
@@ -109,6 +110,7 @@ def Seconds2Hours(secs):
 	return timeform
 
 def ThisMonth():
+	"""Calculates statistics for current month"""
 	monthDate = []
 	monthDistance = []
 	monthTime = []
@@ -131,6 +133,7 @@ def ThisMonth():
 	return monthDate, monthDistance, monthTotDist, monthTotRuns, monthAvgDist, Seconds2Hours(monthTotSecs), Seconds2Hours(monthAvgPace)
 
 def RunDistGraphs(dateList, distList, graph_title, graph_xaxis, graph_yaxis):
+	"""Creates graph showing the distance ran for each run."""
 	dates = [mdates.date2num(day) for day in dateList]
 	plt.plot(dates, distList, 'bo')
 	plt.title(graph_title)
