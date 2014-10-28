@@ -44,9 +44,9 @@ def WriteRunToFile():
 
 	run_date = raw_input("\nWhat was the date of the run? (DD/MM/YYYY)\n")
 	run_distance = raw_input("\nHow far did you run? (km)\n")
-	run_time = raw_input("\nHow long did you run for? (HH:MM_SS)\n") 
+	run_time = raw_input("\nHow long did you run for? (HH:MM:SS)\n") 
 
-	f.write(run_date + " " + run_distance + " " + run_time + "\n") 
+	f.write("\n" + run_date + " " + run_distance + " " + run_time) 
 	f.close
 	return
 
