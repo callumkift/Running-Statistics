@@ -89,6 +89,7 @@ def CalculateTotal():
 		totRuns += 1
 		totTime += Hour2Seconds(timeArray[i])
 	avgDist = totDist/totRuns
+	avgPace = totTime/totDist
 
 	dates = [mdates.date2num(day) for day in dateArray]
 	#dates = [datetime.strptime(str(int(day)),'%Y%m%d') for day in monthDate]
@@ -100,7 +101,9 @@ def CalculateTotal():
 	plt.gcf().autofmt_xdate()
 	plt.show()
 
-	return totDist, totRuns, avgDist, Seconds2Hours(totTime)
+	print avgPace
+
+	return totDist, totRuns, avgDist, Seconds2Hours(totTime), Seconds2Hours(avgPace)
 
 def Hour2Seconds(fullTime):
 	secs = fullTime.second
@@ -110,9 +113,14 @@ def Hour2Seconds(fullTime):
 	return totalSeconds
 
 def Seconds2Hours(secs):
-	hour = int(secs/3600)
-	minutes = secs%hour
-	seconds = minutes%60
+	if (secs > 3600):
+		hour = int(secs/3600)
+		minutes = secs%hour
+		seconds = minutes%60
+	else:
+		hour = 0
+		minutes = int(secs/60)
+		seconds = int(secs%minutes)
 	timeform = time(hour, minutes, seconds, 0)
 	return timeform
 
@@ -133,8 +141,9 @@ def ThisMonth():
 			monthTotDist += distanceArray[i]
 			monthTotSecs += Hour2Seconds(timeArray[i])
 			monthTotRuns += 1
-	monthTotTime = Seconds2Hours(monthTotSecs)
+	
 	monthAvgDist = monthTotDist/monthTotRuns
+	monthAvgPace = monthTotSecs/monthTotDist
 
 	dates = [mdates.date2num(day) for day in monthDate]
 	plt.plot(dates, monthDistance, 'bo')
@@ -145,7 +154,7 @@ def ThisMonth():
 	plt.gcf().autofmt_xdate()
 	plt.show()
 
-	return monthTotDist, monthTotRuns, monthAvgDist, monthTotTime
+	return monthTotDist, monthTotRuns, monthAvgDist, Seconds2Hours(monthTotSecs), Seconds2Hours(monthAvgPace)
 
 
 
@@ -170,20 +179,22 @@ if __name__ == '__main__':
 	print "----------------------------------"
 	print "----------------------------------\n"
 
-	totalDistance, numberOfRuns, averageDistance, totalRunTime = CalculateTotal()
+	totalDistance, totalNumberOfRuns, totalAverageDistance, totalRunTime, totalAveragePace = CalculateTotal()
 
 	print "\n----- Total -----"
 	print "-----------------"
 	print "You have run a total distance of %.2fkms" %totalDistance
-	print "You have run a total of %d times" %numberOfRuns
-	print "You run an average of %.2fkms" %averageDistance
-	print "You have run for a total time of", totalRunTime
+	print "You have run a total of %d times" %totalNumberOfRuns
+	print "You run an average of %.2fkms" %totalAverageDistance
+	print "You have run for a total of %s hrs" %totalRunTime.isoformat()
+	print "You run with an average pace of %s hrs/km" %totalAveragePace.isoformat()
 
-	monthTotDist, monthTotRuns, monthAvgDist, monthTotTime = ThisMonth()
+	monthTotDist, monthTotRuns, monthAvgDist, monthTotTime, monthAvgPace = ThisMonth()
 
 	print "\n----- This month -----"
 	print "----------------------"
 	print "You have run a total distance of %.2fkms" %monthTotDist
 	print "You have run a total of %d times" %monthTotRuns
 	print "You run an average of %.2fkms" %monthAvgDist
-	print "You have run for a total time of", monthTotTime
+	print "You have run for a total of %s hrs" %monthTotTime.isoformat()
+	print "You have run with an average pace of %s hrs/km" %monthAvgPace.isoformat()
