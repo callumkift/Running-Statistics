@@ -63,30 +63,16 @@ def ReadData():
 				line = line.strip() 
 				column = re.split(" |/|:", line)
 				if (len(column) == 7):
-					dateArray.append(date(int(column[2]), int(column[1]), int(column[0])))
-					distanceArray.append(float(column[3]))
-					timeArray.append(time(int(column[4]), int(column[5]), int(column[6]),0))
-		# print "Data read", len(distanceArray)
+					dateList.append(date(int(column[2]), int(column[1]), int(column[0])))
+					distanceList.append(float(column[3]))
+					timeList.append(time(int(column[4]), int(column[5]), int(column[6]),0))
+		# print "Data read", len(distanceList)
 	else:
 		print "\n-- It seems that you have no previous runs saved."
 		print "--",
 		AddRun()
 		ReadData()
 	return
-
-def CalculateTotal():
-	"""This calculates the statistics for all runs."""
-	totDist = 0
-	totRuns = 0
-	totTime = 0
-
-	for i in range(len(distanceArray)):
-		totDist += distanceArray[i]
-		totRuns += 1
-		totTime += Hour2Seconds(timeArray[i])
-	avgDist = totDist/totRuns
-	avgPace = totTime/totDist
-	return totDist, totRuns, avgDist, Seconds2Hours(totTime), Seconds2Hours(avgPace)
 
 def Hour2Seconds(fullTime):
 	"""Converts time format (hh, mm, ss) into seconds."""
@@ -109,28 +95,51 @@ def Seconds2Hours(secs):
 	timeform = time(hour, minutes, seconds, 0)
 	return timeform
 
+def CalculateTotal():
+	"""This calculates the statistics for all runs."""
+	totDist = 0
+	totRuns = 0
+	totTime = 0
+
+	runAvgPace = []
+
+	for i in range(len(distanceList)):
+		totDist += distanceList[i]
+		totRuns += 1
+		totTime += Hour2Seconds(timeList[i])
+
+		runAvgPace.append(Seconds2Hours(Hour2Seconds(timeList[i])/distanceList[i]))
+
+	avgDist = totDist/totRuns
+	avgPace = totTime/totDist
+
+	return totDist, totRuns, avgDist, Seconds2Hours(totTime), Seconds2Hours(avgPace), runAvgPace
+
+
 def ThisMonth():
 	"""Calculates statistics for current month"""
 	monthDate = []
 	monthDistance = []
 	monthTime = []
+	monthRunAvgPace = []
 
 	monthTotDist = 0
 	monthTotSecs = 0
 	monthTotRuns = 0 
 
-	for i in range(len(dateArray)):
-		if (date.today().month == dateArray[i].month):
-			monthDate.append(dateArray[i])
-			monthDistance.append(distanceArray[i])
-			monthTime.append(timeArray[i])
-			monthTotDist += distanceArray[i]
-			monthTotSecs += Hour2Seconds(timeArray[i])
+	for i in range(len(dateList)):
+		if (date.today().month == dateList[i].month):
+			monthDate.append(dateList[i])
+			monthDistance.append(distanceList[i])
+			monthTime.append(timeList[i])
+			monthTotDist += distanceList[i]
+			monthTotSecs += Hour2Seconds(timeList[i])
 			monthTotRuns += 1
-	
+			monthRunAvgPace.append(Seconds2Hours(Hour2Seconds(timeList[i])/distanceList[i]))
+
 	monthAvgDist = monthTotDist/monthTotRuns
-	monthAvgPace = monthTotSecs/monthTotDist
-	return monthDate, monthDistance, monthTotDist, monthTotRuns, monthAvgDist, Seconds2Hours(monthTotSecs), Seconds2Hours(monthAvgPace)
+	monthTotAvgPace = monthTotSecs/monthTotDist
+	return monthDate, monthDistance, monthTotDist, monthTotRuns, monthAvgDist, Seconds2Hours(monthTotSecs), Seconds2Hours(monthTotAvgPace), monthRunAvgPace
 
 def RunDistGraphs(dateList, distList, graph_title, graph_xaxis, graph_yaxis):
 	"""Creates graph showing the distance ran for each run."""
@@ -143,6 +152,20 @@ def RunDistGraphs(dateList, distList, graph_title, graph_xaxis, graph_yaxis):
 	plt.gcf().autofmt_xdate()
 	plt.show()
 
+def RunPaceGraphs(dateList, paceList, graph_title, graph_xaxis, graph_yaxis):
+	"""Creates graph showing the pace for each run."""
+	dates = [mdates.date2num(day) for day in dateList]
+	paces = [Hour2Seconds(time) for time in paceList]
+	plt.plot(dates, paces, '#FFD6D6')
+	plt.title(graph_title)
+	plt.xlabel(graph_xaxis)
+	plt.ylabel(graph_yaxis)
+	plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%d/%m/%Y'))
+	#plt.gca().yaxis.set_major_formatter(mdates.DateFormatter())
+	plt.gcf().autofmt_xdate()	
+	plt.fill_between(dates, paces, color='#FCE6E6')
+	plt.show()
+
 			
 if __name__ == '__main__':
 
@@ -151,9 +174,9 @@ if __name__ == '__main__':
 	print "----------------------------------\n"
 
 	# Defining lists that contain all run data
-	dateArray = []
-	distanceArray = []
-	timeArray = []
+	dateList = []
+	distanceList = []
+	timeList = []
 
 	AddRun()
 	ViewStats()
@@ -165,7 +188,7 @@ if __name__ == '__main__':
 	print "----------------------------------\n"
 
 	# Calculate total statistics
-	totalDistance, totalNumberOfRuns, totalAverageDistance, totalRunTime, totalAveragePace = CalculateTotal()
+	totalDistance, totalNumberOfRuns, totalAverageDistance, totalRunTime, totalAveragePace, totalRunAvgPace = CalculateTotal()
 	print "\n----- Total -----"
 	print "-----------------"
 	print "You have run a total distance of %.2fkms" %totalDistance
@@ -173,15 +196,16 @@ if __name__ == '__main__':
 	print "You run an average of %.2fkms" %totalAverageDistance
 	print "You have run for a total of %s hrs" %totalRunTime.isoformat()
 	print "You run with an average pace of %s hrs/km" %totalAveragePace.isoformat()
-	RunDistGraphs(dateArray, distanceArray, "All time runs", "Date", "Distance (km)")
-
+	RunDistGraphs(dateList, distanceList, "All time runs", "Date", "Distance (km)")
+	RunPaceGraphs(dateList, totalRunAvgPace, "All time runs", "Date", "Pace (secs/km)")
 	# Calculate current month's statistics
-	monthDateList, monthDistanceList, monthTotDist, monthTotRuns, monthAvgDist, monthTotTime, monthAvgPace = ThisMonth()
+	monthDateList, monthDistanceList, monthTotDist, monthTotRuns, monthAvgDist, monthTotTime, monthTotAvgPace, monthIndAvgPace = ThisMonth()
 	print "\n----- This month -----"
 	print "----------------------"
 	print "You have run a total distance of %.2fkms" %monthTotDist
 	print "You have run a total of %d times" %monthTotRuns
 	print "You run an average of %.2fkms" %monthAvgDist
 	print "You have run for a total of %s hrs" %monthTotTime.isoformat()
-	print "You have run with an average pace of %s hrs/km" %monthAvgPace.isoformat()
+	print "You have run with an average pace of %s s/km" %monthTotAvgPace.isoformat()
 	RunDistGraphs(monthDateList, monthDistanceList, "Runs this month", "Date", "Distance (km)")
+	RunPaceGraphs(monthDateList, monthIndAvgPace, "Runs this month", "Date", "Pace (secs/km)")
