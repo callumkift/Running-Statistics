@@ -103,17 +103,27 @@ def CalculateTotal():
 
 	runAvgPace = []
 
+	bestDistIndex = 0
+	bestAvgPaceValue = 1000000
+	bestAvgPaceIndex = 0
+
+
 	for i in range(len(distanceList)):
 		totDist += distanceList[i]
 		totRuns += 1
 		totTime += Hour2Seconds(timeList[i])
-
-		runAvgPace.append(Seconds2Hours(Hour2Seconds(timeList[i])/distanceList[i]))
-
+		secsAvgPace = Hour2Seconds(timeList[i])/distanceList[i]
+		print bestAvgPaceValue, secsAvgPace, Seconds2Hours(secsAvgPace)
+		runAvgPace.append(Seconds2Hours(secsAvgPace))
+		if (distanceList[i] > bestDistIndex):
+			bestDist = i
+		if (bestAvgPaceValue > secsAvgPace):
+			bestAvgPaceValue = secsAvgPace
+			bestAvgPaceIndex = i
 	avgDist = totDist/totRuns
 	avgPace = totTime/totDist
-
-	return totDist, totRuns, avgDist, Seconds2Hours(totTime), Seconds2Hours(avgPace), runAvgPace
+	
+	return bestDistIndex, bestAvgPaceIndex, totDist, totRuns, avgDist, Seconds2Hours(totTime), Seconds2Hours(avgPace), runAvgPace
 
 
 def ThisMonth():
@@ -188,7 +198,7 @@ if __name__ == '__main__':
 	print "----------------------------------\n"
 
 	# Calculate total statistics
-	totalDistance, totalNumberOfRuns, totalAverageDistance, totalRunTime, totalAveragePace, totalRunAvgPace = CalculateTotal()
+	totalBestDist, totalBestPace, totalDistance, totalNumberOfRuns, totalAverageDistance, totalRunTime, totalAveragePace, totalRunAvgPace = CalculateTotal()
 	print "\n----- Total -----"
 	print "-----------------"
 	print "You have run a total distance of %.2fkms" %totalDistance
@@ -196,6 +206,9 @@ if __name__ == '__main__':
 	print "You run an average of %.2fkms" %totalAverageDistance
 	print "You have run for a total of %s hrs" %totalRunTime.isoformat()
 	print "You run with an average pace of %s hrs/km" %totalAveragePace.isoformat()
+
+	print "\nLongest run: %.2fkm, on %s, with an average pace of %s hrs/km" %(distanceList[totalBestDist], dateList[totalBestDist].isoformat(), totalRunAvgPace[totalBestDist].isoformat())
+	print "Best pace: %s, on %s, for a distance of %.2fkm" %(totalRunAvgPace[totalBestPace].isoformat(), dateList[totalBestPace].isoformat(), distanceList[totalBestPace])
 	DistPaceGraph(dateList, totalRunAvgPace, distanceList, "All runs", "Date", "Pace (secs/km)", "Distance (km)")
 	#RunDistGraphs(dateList, distanceList, "All time runs", "Date", "Distance (km)")
 	#RunPaceGraphs(dateList, totalRunAvgPace, "All time runs", "Date", "Pace (secs/km)")
@@ -209,7 +222,7 @@ if __name__ == '__main__':
 	print "You have run a total of %d times" %monthTotRuns
 	print "You run an average of %.2fkms" %monthAvgDist
 	print "You have run for a total of %s hrs" %monthTotTime.isoformat()
-	print "You have run with an average pace of %s s/km" %monthTotAvgPace.isoformat()
+	print "You have run with an average pace of %s hrs/km" %monthTotAvgPace.isoformat()
 	DistPaceGraph(monthDateList, monthIndAvgPace, monthDistanceList, "Runs this month", "Date", "Pace (secs/km)", "Distance (km)")
 	#RunDistGraphs(monthDateList, monthDistanceList, "Runs this month", "Date", "Distance (km)")
 	#RunPaceGraphs(monthDateList, monthIndAvgPace, "Runs this month", "Date", "Pace (secs/km)")
