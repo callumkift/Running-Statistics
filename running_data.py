@@ -141,29 +141,29 @@ def ThisMonth():
 	monthTotAvgPace = monthTotSecs/monthTotDist
 	return monthDate, monthDistance, monthTotDist, monthTotRuns, monthAvgDist, Seconds2Hours(monthTotSecs), Seconds2Hours(monthTotAvgPace), monthRunAvgPace
 
-def RunDistGraphs(dateList, distList, graph_title, graph_xaxis, graph_yaxis):
-	"""Creates graph showing the distance ran for each run."""
-	dates = [mdates.date2num(day) for day in dateList]
-	plt.plot(dates, distList, 'bo')
-	plt.title(graph_title)
-	plt.xlabel(graph_xaxis)
-	plt.ylabel(graph_yaxis)
-	plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%d/%m/%Y'))
-	plt.gcf().autofmt_xdate()
-	plt.show()
+def DistPaceGraph(x_dateList, y1_paceList, y2_distList, graph_title, graph_xaxis, graph_y1axis, graph_y2axis):
+	"""Creates a graph showing the distance of each run and the average pace
+		of it."""
+	dates = [mdates.date2num(day) for day in x_dateList]
+	paces = [Hour2Seconds(time) for time in y1_paceList]
 
-def RunPaceGraphs(dateList, paceList, graph_title, graph_xaxis, graph_yaxis):
-	"""Creates graph showing the pace for each run."""
-	dates = [mdates.date2num(day) for day in dateList]
-	paces = [Hour2Seconds(time) for time in paceList]
-	plt.plot(dates, paces, '#FFD6D6')
-	plt.title(graph_title)
-	plt.xlabel(graph_xaxis)
-	plt.ylabel(graph_yaxis)
-	plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%d/%m/%Y'))
-	#plt.gca().yaxis.set_major_formatter(mdates.DateFormatter())
-	plt.gcf().autofmt_xdate()	
-	plt.fill_between(dates, paces, color='#FCE6E6')
+	fig, ax1 = plt.subplots()
+	ax1.plot(dates, paces, '#FFD6D6')
+	ax1.set_title(graph_title)
+	ax1.set_xlabel(graph_xaxis)
+	ax1.xaxis.set_major_formatter(mdates.DateFormatter('%d/%m/%Y'))
+	ax1.set_ylabel(graph_y1axis, color='r')
+	ax1.set_ylim([(min(paces)-30), (max(paces)+30)])
+	ax1.fill_between(dates, paces, color='#FCE6E6')
+	for tl in ax1.get_yticklabels():
+		tl.set_color('r')
+
+	ax2 = ax1.twinx()
+	ax2.plot(dates, y2_distList, 'bo')
+	ax2.set_ylabel(graph_y2axis, color='b')
+	ax2.set_ylim([(min(y2_distList)-0.5), (max(y2_distList)+0.5)])
+	for tl in ax2.get_yticklabels():
+		tl.set_color('b')
 	plt.show()
 
 			
@@ -196,8 +196,11 @@ if __name__ == '__main__':
 	print "You run an average of %.2fkms" %totalAverageDistance
 	print "You have run for a total of %s hrs" %totalRunTime.isoformat()
 	print "You run with an average pace of %s hrs/km" %totalAveragePace.isoformat()
-	RunDistGraphs(dateList, distanceList, "All time runs", "Date", "Distance (km)")
-	RunPaceGraphs(dateList, totalRunAvgPace, "All time runs", "Date", "Pace (secs/km)")
+	DistPaceGraph(dateList, totalRunAvgPace, distanceList, "All runs", "Date", "Pace (secs/km)", "Distance (km)")
+	#RunDistGraphs(dateList, distanceList, "All time runs", "Date", "Distance (km)")
+	#RunPaceGraphs(dateList, totalRunAvgPace, "All time runs", "Date", "Pace (secs/km)")
+	
+
 	# Calculate current month's statistics
 	monthDateList, monthDistanceList, monthTotDist, monthTotRuns, monthAvgDist, monthTotTime, monthTotAvgPace, monthIndAvgPace = ThisMonth()
 	print "\n----- This month -----"
@@ -207,5 +210,6 @@ if __name__ == '__main__':
 	print "You run an average of %.2fkms" %monthAvgDist
 	print "You have run for a total of %s hrs" %monthTotTime.isoformat()
 	print "You have run with an average pace of %s s/km" %monthTotAvgPace.isoformat()
-	RunDistGraphs(monthDateList, monthDistanceList, "Runs this month", "Date", "Distance (km)")
-	RunPaceGraphs(monthDateList, monthIndAvgPace, "Runs this month", "Date", "Pace (secs/km)")
+	DistPaceGraph(monthDateList, monthIndAvgPace, monthDistanceList, "Runs this month", "Date", "Pace (secs/km)", "Distance (km)")
+	#RunDistGraphs(monthDateList, monthDistanceList, "Runs this month", "Date", "Distance (km)")
+	#RunPaceGraphs(monthDateList, monthIndAvgPace, "Runs this month", "Date", "Pace (secs/km)")
