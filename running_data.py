@@ -86,12 +86,12 @@ def Seconds2Hours(secs):
 	"""Converts seconds into time formt (hh, mm, ss)."""
 	if (secs > 3600):
 		hour = int(secs/3600)
-		minutes = secs%hour
-		seconds = minutes%60
+		minutes = int((secs-(hour*3600))/60)
+		seconds = int(secs-(hour*3600)-(minutes*60))
 	else:
 		hour = 0
-		minutes = int(secs/60)
-		seconds = int(secs%minutes)
+		minutes = int((secs-(hour*3600))/60)
+		seconds = int(secs-(hour*3600)-(minutes*60))
 	timeform = time(hour, minutes, seconds, 0)
 	return timeform
 
@@ -103,6 +103,7 @@ def CalculateTotal():
 
 	runAvgPace = []
 
+	bestDistValue = 0
 	bestDistIndex = 0
 	bestAvgPaceValue = 1000000
 	bestAvgPaceIndex = 0
@@ -113,10 +114,10 @@ def CalculateTotal():
 		totRuns += 1
 		totTime += Hour2Seconds(timeList[i])
 		secsAvgPace = Hour2Seconds(timeList[i])/distanceList[i]
-		print bestAvgPaceValue, secsAvgPace, Seconds2Hours(secsAvgPace)
 		runAvgPace.append(Seconds2Hours(secsAvgPace))
-		if (distanceList[i] > bestDistIndex):
-			bestDist = i
+		if (distanceList[i] > bestDistValue):
+			bestDistValue = distanceList[i]
+			bestDistIndex = i
 		if (bestAvgPaceValue > secsAvgPace):
 			bestAvgPaceValue = secsAvgPace
 			bestAvgPaceIndex = i
@@ -212,7 +213,7 @@ if __name__ == '__main__':
 	DistPaceGraph(dateList, totalRunAvgPace, distanceList, "All runs", "Date", "Pace (secs/km)", "Distance (km)")
 	#RunDistGraphs(dateList, distanceList, "All time runs", "Date", "Distance (km)")
 	#RunPaceGraphs(dateList, totalRunAvgPace, "All time runs", "Date", "Pace (secs/km)")
-	
+
 
 	# Calculate current month's statistics
 	monthDateList, monthDistanceList, monthTotDist, monthTotRuns, monthAvgDist, monthTotTime, monthTotAvgPace, monthIndAvgPace = ThisMonth()
