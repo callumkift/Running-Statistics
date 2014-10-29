@@ -22,13 +22,6 @@ def AddRun():
 		#print "yes detected"
 		WriteRunToFile()
 
-def ViewStats():
-	"""Asks user if they want to view their stats, if yes then it runs ReadData()"""
-	view_stats = raw_input("\nDo you want to view your stats? (y/n)\n")
-	if (view_stats == "y" or view_stats == "Y"):
-		ReadData()
-
-
 def WriteRunToFile():
 	""""Runs when user wants to add a run to file. Finds the file and then asks the
 		user to input data and writes to file. If it is their first run, then it will
@@ -49,6 +42,12 @@ def WriteRunToFile():
 	f.write("\n" + run_date + " " + run_distance + " " + run_time) 
 	f.close
 	return
+
+def ViewStats():
+	"""Asks user if they want to view their stats, if yes then it runs ReadData()"""
+	view_stats = raw_input("\nDo you want to view your stats? (y/n)\n")
+	if (view_stats == "y" or view_stats == "Y"):
+		ReadData()
 
 def ReadData():
 	"""Runs when user wants to see their stats. This reads the user's run info and 
@@ -84,14 +83,9 @@ def Hour2Seconds(fullTime):
 
 def Seconds2Hours(secs):
 	"""Converts seconds into time formt (hh, mm, ss)."""
-	if (secs > 3600):
-		hour = int(secs/3600)
-		minutes = int((secs-(hour*3600))/60)
-		seconds = int(secs-(hour*3600)-(minutes*60))
-	else:
-		hour = 0
-		minutes = int((secs-(hour*3600))/60)
-		seconds = int(secs-(hour*3600)-(minutes*60))
+	hour = int(secs/3600)
+	minutes = int((secs-(hour*3600))/60)
+	seconds = int(secs-(hour*3600)-(minutes*60))
 	timeform = time(hour, minutes, seconds, 0)
 	return timeform
 
@@ -109,7 +103,6 @@ def CalculateTotal():
 	bestAvgPaceIndex = 0
 	longTimeValue = time(0, 0, 0, 0)
 	longTimeIndex = 0
-
 
 	for i in range(len(distanceList)):
 		totDist += distanceList[i]
@@ -144,14 +137,15 @@ def ThisMonth():
 	monthTotRuns = 0 
 
 	for i in range(len(dateList)):
-		if (date.today().month == dateList[i].month):
+		if (date.today().month == dateList[i].month and date.today().year == dateList[i].year):
 			monthDate.append(dateList[i])
 			monthDistance.append(distanceList[i])
 			monthTime.append(timeList[i])
+			monthRunAvgPace.append(Seconds2Hours(Hour2Seconds(timeList[i])/distanceList[i]))
+			
 			monthTotDist += distanceList[i]
 			monthTotSecs += Hour2Seconds(timeList[i])
 			monthTotRuns += 1
-			monthRunAvgPace.append(Seconds2Hours(Hour2Seconds(timeList[i])/distanceList[i]))
 
 	monthAvgDist = monthTotDist/monthTotRuns
 	monthTotAvgPace = monthTotSecs/monthTotDist
@@ -243,13 +237,11 @@ def LastRunComparison():
 			distRangeString = "more than 50km"
 
 	sameDistListPace, sameDistListDate = (list(t) for t in zip(*sorted(zip(sameDistListPace, sameDistListDate))))
-	
 	pacePosit = 0
 	for i in range(len(sameDistListDate)):
 		if lastRunDate == sameDistListDate[i]:
 			pacePosit = i+1
 		
-
 	return lastRunAvgPaceSecs, lastRunDate, sameDistListPace, sameDistListDate, pacePosit, distRangeString
 
 
