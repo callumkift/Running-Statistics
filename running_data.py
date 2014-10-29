@@ -177,7 +177,77 @@ def DistPaceGraph(x_dateList, y1_paceList, y2_distList, graph_title, graph_xaxis
 		tl.set_color('b')
 	plt.show()
 
-			
+def LastRunComparison():
+	"""This compares the last run with other runs you have done of a similar distance. These distances will be
+		of the ranges: (0-3), (3-5), (5-7.5), (7.5-10), (10-15), (15-20), (20-30), (30-50), (50+)."""
+	lastRunDate = dateList[-1]
+	lastRunDistance = distanceList[-1]
+	lastRunTime = timeList[-1]
+	lastRunAvgPaceSecs = (Hour2Seconds(lastRunTime)/lastRunDistance)
+
+	distRangeString = ""
+
+	sameDistListDate = [lastRunDate]
+	sameDistListPace = [lastRunAvgPaceSecs]
+
+	for i in range(len(dateList)-1):
+		if (distanceList[i] < 3.0 and lastRunDistance < 3.0):
+			pace = Hour2Seconds(timeList[i])/distanceList[i]
+			sameDistListDate.append(dateList[i])
+			sameDistListPace.append(pace)
+			distRangeString = "less than 3km"
+		if (distanceList[i] >= 3.0 and distanceList[i] < 5.0 and lastRunDistance >= 3.0 and lastRunDistance < 5.0):
+			pace = Hour2Seconds(timeList[i])/distanceList[i]
+			sameDistListDate.append(dateList[i])
+			sameDistListPace.append(pace)
+			distRangeString = "3 - 5 km"
+		if (distanceList[i] >= 5.0 and distanceList[i] < 7.5 and lastRunDistance >= 5.0 and lastRunDistance < 7.5):
+			pace = Hour2Seconds(timeList[i])/distanceList[i]
+			sameDistListDate.append(dateList[i])
+			sameDistListPace.append(pace)
+			distRangeString = "5 - 7.5 km"
+		if (distanceList[i] >= 7.5 and distanceList[i] < 10.0 and lastRunDistance >= 7.5 and lastRunDistance < 10.0):
+			pace = Hour2Seconds(timeList[i])/distanceList[i]
+			sameDistListDate.append(dateList[i])
+			sameDistListPace.append(pace)
+			distRangeString = "7.5 - 10 km"
+		if (distanceList[i] >= 10.0 and distanceList[i] < 15.0 and lastRunDistance >= 10.0 and lastRunDistance < 15.0):
+			pace = Hour2Seconds(timeList[i])/distanceList[i]
+			sameDistListDate.append(dateList[i])
+			sameDistListPace.append(pace)
+			distRangeString = "10 - 15 km"
+		if (distanceList[i] >= 15.0 and distanceList[i] < 20.0 and lastRunDistance >= 15.0 and lastRunDistance < 20.0):
+			pace = Hour2Seconds(timeList[i])/distanceList[i]
+			sameDistListDate.append(dateList[i])
+			sameDistListPace.append(pace)
+			distRangeString = "15 - 20 km"
+		if (distanceList[i] >= 20.0 and distanceList[i] < 30.0 and lastRunDistance >= 20.0 and lastRunDistance < 30.0):
+			pace = Hour2Seconds(timeList[i])/distanceList[i]
+			sameDistListDate.append(dateList[i])
+			sameDistListPace.append(pace)
+			distRangeString = "20 - 30 km"
+		if (distanceList[i] >= 30.0 and distanceList[i] < 50.0 and lastRunDistance >= 30.0 and lastRunDistance < 50.0):
+			pace = Hour2Seconds(timeList[i])/distanceList[i]
+			sameDistListDate.append(dateList[i])
+			sameDistListPace.append(pace)
+			distRangeString = "30 - 50 km"
+		if (distanceList[i] >= 50.0):
+			pace = Hour2Seconds(timeList[i])/distanceList[i]
+			sameDistListDate.append(dateList[i])
+			sameDistListPace.append(pace)
+			distRangeString = "more than 50km"
+
+	sameDistListPace, sameDistListDate = (list(t) for t in zip(*sorted(zip(sameDistListPace, sameDistListDate))))
+	
+	pacePosit = 0
+	for i in range(len(sameDistListDate)):
+		if lastRunDate == sameDistListDate[i]:
+			pacePosit = i+1
+		
+
+	return lastRunAvgPaceSecs, lastRunDate, sameDistListPace, sameDistListDate, pacePosit, distRangeString
+
+
 if __name__ == '__main__':
 
 	print "----------------------------------"
@@ -199,6 +269,7 @@ if __name__ == '__main__':
 	print "----------------------------------\n"
 
 	# Calculate total statistics
+	# --------------------------
 	totalBestDist, totalBestPace, totalDistance, totalNumberOfRuns, totalAverageDistance, totalRunTime, totalAveragePace, totalRunAvgPace = CalculateTotal()
 	print "\n----- Total -----"
 	print "-----------------"
@@ -206,16 +277,15 @@ if __name__ == '__main__':
 	print "You have run a total of %d times" %totalNumberOfRuns
 	print "You run an average of %.2fkms" %totalAverageDistance
 	print "You have run for a total of %s hrs" %totalRunTime.isoformat()
-	print "You run with an average pace of %s hrs/km" %totalAveragePace.isoformat()
+	print "You run with an average pace of %s mins/km" %totalAveragePace.strftime('%M.%S')
 
-	print "\nLongest run: %.2fkm, on %s, with an average pace of %s hrs/km" %(distanceList[totalBestDist], dateList[totalBestDist].isoformat(), totalRunAvgPace[totalBestDist].isoformat())
-	print "Best pace: %s, on %s, for a distance of %.2fkm" %(totalRunAvgPace[totalBestPace].isoformat(), dateList[totalBestPace].isoformat(), distanceList[totalBestPace])
+	print "\nFurthest run: %.2fkm, on %s, with an average pace of %s mins/km" %(distanceList[totalBestDist], dateList[totalBestDist].strftime('%d/%m/%Y'), totalRunAvgPace[totalBestDist].strftime('%M.%S'))
+	print "Best pace: %s mins/km, on %s, for a distance of %.2fkm" %(totalRunAvgPace[totalBestPace].strftime('%M.%S'), dateList[totalBestPace].strftime('%d/%m/%Y'), distanceList[totalBestPace])
 	DistPaceGraph(dateList, totalRunAvgPace, distanceList, "All runs", "Date", "Pace (secs/km)", "Distance (km)")
-	#RunDistGraphs(dateList, distanceList, "All time runs", "Date", "Distance (km)")
-	#RunPaceGraphs(dateList, totalRunAvgPace, "All time runs", "Date", "Pace (secs/km)")
 
 
 	# Calculate current month's statistics
+	# ------------------------------------
 	monthDateList, monthDistanceList, monthTotDist, monthTotRuns, monthAvgDist, monthTotTime, monthTotAvgPace, monthIndAvgPace = ThisMonth()
 	print "\n----- This month -----"
 	print "----------------------"
@@ -223,7 +293,15 @@ if __name__ == '__main__':
 	print "You have run a total of %d times" %monthTotRuns
 	print "You run an average of %.2fkms" %monthAvgDist
 	print "You have run for a total of %s hrs" %monthTotTime.isoformat()
-	print "You have run with an average pace of %s hrs/km" %monthTotAvgPace.isoformat()
+	print "You have run with an average pace of %s mins/km" %monthTotAvgPace.strftime('%M.%S')
 	DistPaceGraph(monthDateList, monthIndAvgPace, monthDistanceList, "Runs this month", "Date", "Pace (secs/km)", "Distance (km)")
-	#RunDistGraphs(monthDateList, monthDistanceList, "Runs this month", "Date", "Distance (km)")
-	#RunPaceGraphs(monthDateList, monthIndAvgPace, "Runs this month", "Date", "Pace (secs/km)")
+
+
+	# Compare last run to similar run distance
+	# ----------------------------------------
+	lrPace, lrDate, sdPace, sdDate, lrPosit, distRange = LastRunComparison()
+	print "\n----- Last run compaision -----"
+	print "-------------------------------"
+	print "Your last run on %s is ranked #%d for your best pace for the distance %s." %(lrDate.strftime('%d/%m/%Y'), lrPosit, distRange)
+	for i in range(len(sdPace)):
+		print "%d) %s mins/km on %s" %((i+1), Seconds2Hours(sdPace[i]).strftime('%M.%S'), sdDate[i].strftime('%d/%m/%Y'))
