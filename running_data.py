@@ -245,6 +245,9 @@ def LastRunComparison():
 		
 	return lastRunAvgPaceSecs, lastRunDate, sameDistListPace, sameDistListDate, pacePosit, distRangeString
 
+def LastRunBestPace(dbPace, lrDist):
+	return Seconds2Hours(dbPace*lrDist)
+
 
 if __name__ == '__main__':
 
@@ -279,7 +282,7 @@ if __name__ == '__main__':
 	print "You run with an average pace of %s mins/km." %totalAveragePace.strftime('%M.%S')
 
 	print "\nYour furthest run was %.2fkm on %s with an average pace of %s mins/km." %(distanceList[totalBestDist], dateList[totalBestDist].strftime('%d/%m/%Y'), paceList[totalBestDist].strftime('%M.%S'))
-	print "Your longest run was %shrs on %s where you ran %.2f at an average pace of %s mins/km." %(timeList[totalLongRun].isoformat(), dateList[totalLongRun].strftime('%d/%m/%Y'), distanceList[totalLongRun], paceList[totalBestDist].strftime('%M.%S'))
+	print "Your longest run was %shrs on %s where you ran %.2f at an average pace of %s mins/km." %(timeList[totalLongRun].isoformat(), dateList[totalLongRun].strftime('%d/%m/%Y'), distanceList[totalLongRun], paceList[totalLongRun].strftime('%M.%S'))
 	print "Your best pace was %s mins/km on %s for a distance of %.2fkm." %(paceList[totalBestPace].strftime('%M.%S'), dateList[totalBestPace].strftime('%d/%m/%Y'), distanceList[totalBestPace])
 	DistPaceGraph(dateList, paceList, distanceList, "All runs", "Date", "Pace (secs/km)", "Distance (km)")
 
@@ -308,6 +311,8 @@ if __name__ == '__main__':
 	if lrPosit == 1:
 		print "CONGRATULATIONS! Your last run on %s was your best pace for the distance %s.\n" %(lrDate.strftime('%d/%m/%Y'), distRange)
 	else:
-		print "Your last run on %s is ranked #%d for your best pace for the distance %s.\n" %(lrDate.strftime('%d/%m/%Y'), lrPosit, distRange)
+		lr_bp = LastRunBestPace(sdPace[0], distanceList[-1])
+		print "Your last run on %s is ranked #%d for your best pace for the distance %s. If you had run at your best pace for this distance, your last run would have taken %s.\n" %(lrDate.strftime('%d/%m/%Y'), lrPosit, distRange, lr_bp.isoformat())
+		#print "If you had run at your best pace for this distance, your last run would have taken %s." %lr_bp.isoformat()
 	for i in range(len(sdPace)):
 		print "%d) %s mins/km on %s" %((i+1), Seconds2Hours(sdPace[i]).strftime('%M.%S'), sdDate[i].strftime('%d/%m/%Y'))
