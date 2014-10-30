@@ -1,8 +1,6 @@
 Ideas
 ----------------------
 
-Show your runs this month
-
 Compare months
 	Furthest ran in a month
 	Longest duration ran in a month
@@ -15,5 +13,5 @@ Compare months
 		total time spent running
 		average distance ran
 
-Last run
-	if ran at your best pace for this distance, this would be your time
+
+Be able to view any months runs
