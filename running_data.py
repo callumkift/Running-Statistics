@@ -302,6 +302,9 @@ if __name__ == '__main__':
 	lrPace, lrDate, sdPace, sdDate, lrPosit, distRange = LastRunComparison()
 	print "\n----- Last run compaision -----"
 	print "-------------------------------"
-	print "Your last run on %s is ranked #%d for your best pace for the distance %s." %(lrDate.strftime('%d/%m/%Y'), lrPosit, distRange)
+	if lrPosit == 1:
+		print "CONGRATULATIONS! Your last run on %s was your best pace for the distance %s.\n" %(lrDate.strftime('%d/%m/%Y'), distRange)
+	else:
+		print "Your last run on %s is ranked #%d for your best pace for the distance %s.\n" %(lrDate.strftime('%d/%m/%Y'), lrPosit, distRange)
 	for i in range(len(sdPace)):
 		print "%d) %s mins/km on %s" %((i+1), Seconds2Hours(sdPace[i]).strftime('%M.%S'), sdDate[i].strftime('%d/%m/%Y'))
