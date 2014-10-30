@@ -1,12 +1,13 @@
-##########
-#
-# This script was created so that a runner can gain
-# more insights into their runs. 
-#
-# Creator: Callum Kift
-# email: callumkift@gmail.com
-#
-##########
+###########################################################
+###                                                     ###
+###  This script was created so that a runner can gain  ###
+###  more insights into their runs.                     ###
+###                                                     ###
+###  Creator: Callum Kift                               ###
+###  email: callumkift@gmail.com                        ###
+###                                                     ### 
+###########################################################
+
 import os.path
 import re
 from datetime import date, time, timedelta
@@ -279,7 +280,7 @@ if __name__ == '__main__':
 
 	print "\nYour furthest run was %.2fkm on %s with an average pace of %s mins/km" %(distanceList[totalBestDist], dateList[totalBestDist].strftime('%d/%m/%Y'), paceList[totalBestDist].strftime('%M.%S'))
 	print "Your longest run was %shrs on %s where you ran %.2f at an average pace of %s mins/km." %(timeList[totalLongRun].isoformat(), dateList[totalLongRun].strftime('%d/%m/%Y'), distanceList[totalLongRun], paceList[totalBestDist].strftime('%M.%S'))
-	print "Your best pace was %s mins/km on %s for a distance of %.2fkm" %(paceList[totalBestDist].strftime('%M.%S'), dateList[totalBestPace].strftime('%d/%m/%Y'), distanceList[totalBestPace])
+	print "Your best pace was %s mins/km on %s for a distance of %.2fkm" %(paceList[totalBestPace].strftime('%M.%S'), dateList[totalBestPace].strftime('%d/%m/%Y'), distanceList[totalBestPace])
 	DistPaceGraph(dateList, paceList, distanceList, "All runs", "Date", "Pace (secs/km)", "Distance (km)")
 
 
