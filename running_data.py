@@ -1,16 +1,33 @@
-###########################################################
-###                                                     ###
-###  This script was created so that a runner can gain  ###
-###  more insights into their runs.                     ###
-###                                                     ###
-###  Creator: Callum Kift                               ###
-###  email: callumkift@gmail.com                        ###
-###                                                     ### 
-###########################################################
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+#
+#  This script was created so that a runner can gain
+#  more insights into their runs.
+# 
+#  Creator: Callum Kift                              
+#  email: callumkift@gmail.com                       
+#
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+# MA 02110-1301, USA.
+# 
 
 import os.path
 import re
-from datetime import date, time, timedelta
+from datetime import date, time, datetime
 from array import array
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
@@ -49,7 +66,9 @@ def ViewStats():
 	view_stats = raw_input("\nDo you want to view your stats? (y/n)\n")
 	if (view_stats == "y" or view_stats == "Y"):
 		ReadData()
-	return "run"
+		return "yes"
+	else:
+		return "no"
 
 def ReadData():
 	"""Runs when user wants to see their stats. This reads the user's run info and 
@@ -156,6 +175,8 @@ def ThisMonth():
 def DistPaceGraph(x_dateList, y1_paceList, y2_distList, graph_title, graph_xaxis, graph_y1axis, graph_y2axis):
 	"""Creates a graph showing the distance of each run and the average pace
 		of it."""
+	dt = datetime.now()
+
 	dates = [mdates.date2num(day) for day in x_dateList]
 	paces = [Hour2Seconds(time) for time in y1_paceList]
 
@@ -164,8 +185,9 @@ def DistPaceGraph(x_dateList, y1_paceList, y2_distList, graph_title, graph_xaxis
 	ax1.set_title(graph_title)
 	ax1.set_xlabel(graph_xaxis)
 	ax1.xaxis.set_major_formatter(mdates.DateFormatter('%d/%m/%Y'))
+	ax1.set_ylim([(min(paces)-10), (max(paces)+10)])
 	ax1.set_ylabel(graph_y1axis, color='r')
-	ax1.set_ylim([(min(paces)-30), (max(paces)+30)])
+	ax1.set_xlim([(min(dates)), (max(dates))])
 	ax1.fill_between(dates, paces, color='#FCE6E6')
 	for tl in ax1.get_yticklabels():
 		tl.set_color('r')
@@ -251,6 +273,42 @@ def LastRunBestPace(dbPace, lrDist):
 		distance."""
 	return Seconds2Hours(dbPace*lrDist)
 
+def PrintTotalStats(totalBestDist, totalBestPace, totalLongRun, totalDistance, totalNumberOfRuns, totalAverageDistance, totalRunTime, totalAveragePace):
+	print "\n----- Total -----"
+	print "-----------------"
+	print "You have run a total distance of %.2fkms." %totalDistance
+	print "You have run a total of %d times." %totalNumberOfRuns
+	print "You run an average of %.2fkms." %totalAverageDistance
+	print "You have run for a total of %s hrs." %totalRunTime.isoformat()
+	print "You run with an average pace of %s mins/km." %totalAveragePace.strftime('%M.%S')
+
+	print "\nYour furthest run was %.2fkms on %s with an average pace of %s mins/km." %(distanceList[totalBestDist], dateList[totalBestDist].strftime('%d/%m/%Y'), paceList[totalBestDist].strftime('%M.%S'))
+	print "Your longest run was %shrs on %s where you ran %.2fkms at an average pace of %s mins/km." %(timeList[totalLongRun].isoformat(), dateList[totalLongRun].strftime('%d/%m/%Y'), distanceList[totalLongRun], paceList[totalLongRun].strftime('%M.%S'))
+	print "Your best pace was %s mins/km on %s for a distance of %.2fkms." %(paceList[totalBestPace].strftime('%M.%S'), dateList[totalBestPace].strftime('%d/%m/%Y'), distanceList[totalBestPace])
+	DistPaceGraph(dateList, paceList, distanceList, "All runs", "Date", "Pace (secs/km)", "Distance (km)")
+
+def PrintCurrentMonthStats(monthDateList, monthDistanceList, monthTotDist, monthTotRuns, monthAvgDist, monthTotTime, monthTotAvgPace, monthIndAvgPace ):
+	print "\n----- This month -----"
+	print "----------------------"
+	print "You have run a total distance of %.2fkms." %monthTotDist
+	print "You have run a total of %d times." %monthTotRuns
+	print "You run an average of %fkms." %monthAvgDist
+	print "You have run for a total of %s hrs." %monthTotTime.isoformat()
+	print "You have run with an average pace of %s mins/km.\n" %monthTotAvgPace.strftime('%M.%S')
+	for i in range(len(monthDateList)):
+		print "%d)  %s  %5.2fkms  %s mins/km" %((i+1), monthDateList[i].strftime('%d/%m/%Y'), monthDistanceList[i], monthIndAvgPace[i].strftime('%M.%S'))
+	DistPaceGraph(monthDateList, monthIndAvgPace, monthDistanceList, "Runs this month", "Date", "Pace (secs/km)", "Distance (km)")	
+
+def PrintLastRunComparison(lrPace, lrDate, sdPace, sdDate, lrPosit, distRange):
+	print "\n----- Last run comparison -----"
+	print "-------------------------------"
+	if lrPosit == 1:
+		print "CONGRATULATIONS! Your last run on %s was your best pace for the distance %s.\n" %(lrDate.strftime('%d/%m/%Y'), distRange)
+	else:
+		lr_bp = LastRunBestPace(sdPace[0], distanceList[-1])
+		print "Your last run on %s is ranked #%d for your best pace for the distance %s. If you had run at your best pace for this distance, your last run would have taken %s.\n" %(lrDate.strftime('%d/%m/%Y'), lrPosit, distRange, lr_bp.isoformat())
+	for i in range(len(sdPace)):
+		print "%d) %s mins/km on %s" %((i+1), Seconds2Hours(sdPace[i]).strftime('%M.%S'), sdDate[i].strftime('%d/%m/%Y'))
 
 if __name__ == '__main__':
 
@@ -262,12 +320,11 @@ if __name__ == '__main__':
 	dateList = [] # datetime.date(yyyy, mm, dd)
 	distanceList = [] # float
 	timeList = [] # datetime.time(hh, mm, ss)
-	paceList = [] # secs
+	paceList = [] # time(hh, mm, ss)/km
 
 	AddRun()
-	ViewStats()
 
-	if ViewStats == "run":
+	if ViewStats() == "yes":
 		print "\n----------------------------------"
 		print "----------------------------------"
 		print "----------- STATISTICS -----------"
@@ -277,48 +334,18 @@ if __name__ == '__main__':
 		# Calculate total statistics
 		# --------------------------
 		totalBestDist, totalBestPace, totalLongRun, totalDistance, totalNumberOfRuns, totalAverageDistance, totalRunTime, totalAveragePace = CalculateTotal()
-		print "\n----- Total -----"
-		print "-----------------"
-		print "You have run a total distance of %.2fkms." %totalDistance
-		print "You have run a total of %d times." %totalNumberOfRuns
-		print "You run an average of %.2fkms." %totalAverageDistance
-		print "You have run for a total of %s hrs." %totalRunTime.isoformat()
-		print "You run with an average pace of %s mins/km." %totalAveragePace.strftime('%M.%S')
-
-		print "\nYour furthest run was %.2fkm on %s with an average pace of %s mins/km." %(distanceList[totalBestDist], dateList[totalBestDist].strftime('%d/%m/%Y'), paceList[totalBestDist].strftime('%M.%S'))
-		print "Your longest run was %shrs on %s where you ran %.2f at an average pace of %s mins/km." %(timeList[totalLongRun].isoformat(), dateList[totalLongRun].strftime('%d/%m/%Y'), distanceList[totalLongRun], paceList[totalLongRun].strftime('%M.%S'))
-		print "Your best pace was %s mins/km on %s for a distance of %.2fkm." %(paceList[totalBestPace].strftime('%M.%S'), dateList[totalBestPace].strftime('%d/%m/%Y'), distanceList[totalBestPace])
-		DistPaceGraph(dateList, paceList, distanceList, "All runs", "Date", "Pace (secs/km)", "Distance (km)")
-
+		PrintTotalStats(totalBestDist, totalBestPace, totalLongRun, totalDistance, totalNumberOfRuns, totalAverageDistance, totalRunTime, totalAveragePace)
 
 		# Calculate current month's statistics
 		# ------------------------------------
 		monthDateList, monthDistanceList, monthTotDist, monthTotRuns, monthAvgDist, monthTotTime, monthTotAvgPace, monthIndAvgPace = ThisMonth()
-		print "\n----- This month -----"
-		print "----------------------"
-		print "You have run a total distance of %.2fkms." %monthTotDist
-		print "You have run a total of %d times." %monthTotRuns
-		print "You run an average of %.2fkms." %monthAvgDist
-		print "You have run for a total of %s hrs." %monthTotTime.isoformat()
-		print "You have run with an average pace of %s mins/km.\n" %monthTotAvgPace.strftime('%M.%S')
-		for i in range(len(monthDateList)):
-			print "%d) | %s | %.2fkms | %s mins/km" %((i+1), monthDateList[i].strftime('%d/%m/%Y'), monthDistanceList[i], monthIndAvgPace[i].strftime('%M.%S'))
-
-		DistPaceGraph(monthDateList, monthIndAvgPace, monthDistanceList, "Runs this month", "Date", "Pace (secs/km)", "Distance (km)")
+		PrintCurrentMonthStats(monthDateList, monthDistanceList, monthTotDist, monthTotRuns, monthAvgDist, monthTotTime, monthTotAvgPace, monthIndAvgPace)
 
 
 		# Compare last run to similar run distance
 		# ----------------------------------------
 		lrPace, lrDate, sdPace, sdDate, lrPosit, distRange = LastRunComparison()
-		print "\n----- Last run compaision -----"
-		print "-------------------------------"
-		if lrPosit == 1:
-			print "CONGRATULATIONS! Your last run on %s was your best pace for the distance %s.\n" %(lrDate.strftime('%d/%m/%Y'), distRange)
-		else:
-			lr_bp = LastRunBestPace(sdPace[0], distanceList[-1])
-			print "Your last run on %s is ranked #%d for your best pace for the distance %s. If you had run at your best pace for this distance, your last run would have taken %s.\n" %(lrDate.strftime('%d/%m/%Y'), lrPosit, distRange, lr_bp.isoformat())
-			#print "If you had run at your best pace for this distance, your last run would have taken %s." %lr_bp.isoformat()
-		for i in range(len(sdPace)):
-			print "%d) %s mins/km on %s" %((i+1), Seconds2Hours(sdPace[i]).strftime('%M.%S'), sdDate[i].strftime('%d/%m/%Y'))
+		PrintLastRunComparison(lrPace, lrDate, sdPace, sdDate, lrPosit, distRange)
+
 	else:
 		print "\nGoodbye."
