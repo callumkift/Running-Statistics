@@ -15,3 +15,5 @@ Compare months
 
 
 Be able to view any months runs
+
+Change pace in graphs to mins/km instead of secs/km
