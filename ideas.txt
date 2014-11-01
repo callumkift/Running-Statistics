@@ -1,6 +1,8 @@
 Ideas
 ----------------------
 
+Add furthest, longest and best pace run for current month
+
 Compare months
 	Furthest ran in a month
 	Longest duration ran in a month
