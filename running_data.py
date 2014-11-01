@@ -308,6 +308,12 @@ def PrintNoRunsThisMonth():
 	print "----------------------"
 	print "You have not run yet this month."
 
+def PrintSingleRunMonth():
+	print "\n----- This month -----"
+	print "----------------------"
+	print "You have run only once this month on %s for %.2fkms at a pace of %s mins/km." %(dateList[-1].strftime('%d/%m/%Y'), distanceList[-1], paceList[-1].strftime('%M.%S'))
+
+
 def PrintLastRunComparison(lrPace, lrDate, sdPace, sdDate, lrPosit, distRange):
 	print "\n----- Last run comparison -----"
 	print "-------------------------------"
@@ -350,7 +356,10 @@ if __name__ == '__main__':
 			# ------------------------------------
 			if (date.today().year == dateList[-1].year and date.today().month == dateList[-1].month):
 				monthDateList, monthDistanceList, monthTotDist, monthTotRuns, monthAvgDist, monthTotTime, monthTotAvgPace, monthIndAvgPace = ThisMonth()
-				PrintCurrentMonthStats(monthDateList, monthDistanceList, monthTotDist, monthTotRuns, monthAvgDist, monthTotTime, monthTotAvgPace, monthIndAvgPace)
+				if monthTotRuns == 1:
+					PrintSingleRunMonth()
+				else:
+					PrintCurrentMonthStats(monthDateList, monthDistanceList, monthTotDist, monthTotRuns, monthAvgDist, monthTotTime, monthTotAvgPace, monthIndAvgPace)
 			else:
 				PrintNoRunsThisMonth()
 
