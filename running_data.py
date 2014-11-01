@@ -39,6 +39,9 @@ def AddRun():
 	if (add_run == "y" or add_run == "Y"):
 		#print "yes detected"
 		WriteRunToFile()
+		return "add"
+	else:
+		return "noAdd"
 
 def WriteRunToFile():
 	""""Runs when user wants to add a run to file. Finds the file and then asks the
@@ -65,10 +68,9 @@ def ViewStats():
 	"""Asks user if they want to view their stats, if yes then it runs ReadData()"""
 	view_stats = raw_input("\nDo you want to view your stats? (y/n)\n")
 	if (view_stats == "y" or view_stats == "Y"):
-		ReadData()
-		return "yes"
+		return "view"
 	else:
-		return "no"
+		return "noView"
 
 def ReadData():
 	"""Runs when user wants to see their stats. This reads the user's run info and 
@@ -87,13 +89,15 @@ def ReadData():
 					distanceList.append(float(column[3]))
 					timeList.append(time(int(column[4]), int(column[5]), int(column[6]),0))
 					paceList.append(Seconds2Hours(Hour2Seconds(time(int(column[4]), int(column[5]), int(column[6]),0))/float(column[3])))
-		# print "Data read", len(distanceList)
+		return "read"
 	else:
 		print "\n-- It seems that you have no previous runs saved."
 		print "--",
-		AddRun()
-		ReadData()
-	return
+		if AddRun() == "add":
+			ReadData()
+		else:
+			return "noRead"
+
 
 def Hour2Seconds(fullTime):
 	"""Converts time format (hh, mm, ss) into seconds."""
@@ -329,31 +333,34 @@ if __name__ == '__main__':
 
 	AddRun()
 
-	if ViewStats() == "yes":
-		print "\n----------------------------------"
-		print "----------------------------------"
-		print "----------- STATISTICS -----------"
-		print "----------------------------------"
-		print "----------------------------------\n"
+	if ViewStats() == "view":
+		if ReadData() == "read":
+			print "\n----------------------------------"
+			print "----------------------------------"
+			print "----------- STATISTICS -----------"
+			print "----------------------------------"
+			print "----------------------------------\n"
 
-		# Calculate total statistics
-		# --------------------------
-		totalBestDist, totalBestPace, totalLongRun, totalDistance, totalNumberOfRuns, totalAverageDistance, totalRunTime, totalAveragePace = CalculateTotal()
-		PrintTotalStats(totalBestDist, totalBestPace, totalLongRun, totalDistance, totalNumberOfRuns, totalAverageDistance, totalRunTime, totalAveragePace)
+			# Calculate total statistics
+			# --------------------------
+			totalBestDist, totalBestPace, totalLongRun, totalDistance, totalNumberOfRuns, totalAverageDistance, totalRunTime, totalAveragePace = CalculateTotal()
+			PrintTotalStats(totalBestDist, totalBestPace, totalLongRun, totalDistance, totalNumberOfRuns, totalAverageDistance, totalRunTime, totalAveragePace)
 
-		# Calculate current month's statistics
-		# ------------------------------------
-		if (date.today().year == dateList[-1].year and date.today().month == dateList[-1].month):
-			monthDateList, monthDistanceList, monthTotDist, monthTotRuns, monthAvgDist, monthTotTime, monthTotAvgPace, monthIndAvgPace = ThisMonth()
-			PrintCurrentMonthStats(monthDateList, monthDistanceList, monthTotDist, monthTotRuns, monthAvgDist, monthTotTime, monthTotAvgPace, monthIndAvgPace)
+			# Calculate current month's statistics
+			# ------------------------------------
+			if (date.today().year == dateList[-1].year and date.today().month == dateList[-1].month):
+				monthDateList, monthDistanceList, monthTotDist, monthTotRuns, monthAvgDist, monthTotTime, monthTotAvgPace, monthIndAvgPace = ThisMonth()
+				PrintCurrentMonthStats(monthDateList, monthDistanceList, monthTotDist, monthTotRuns, monthAvgDist, monthTotTime, monthTotAvgPace, monthIndAvgPace)
+			else:
+				PrintNoRunsThisMonth()
+
+
+			# Compare last run to similar run distance
+			# ----------------------------------------
+			lrPace, lrDate, sdPace, sdDate, lrPosit, distRange = LastRunComparison()
+			PrintLastRunComparison(lrPace, lrDate, sdPace, sdDate, lrPosit, distRange)
 		else:
-			PrintNoRunsThisMonth()
-
-
-		# Compare last run to similar run distance
-		# ----------------------------------------
-		lrPace, lrDate, sdPace, sdDate, lrPosit, distRange = LastRunComparison()
-		PrintLastRunComparison(lrPace, lrDate, sdPace, sdDate, lrPosit, distRange)
-
+			print "\nYou need to add runs to view stats."
+			print "Goodbye."
 	else:
 		print "\nGoodbye."
