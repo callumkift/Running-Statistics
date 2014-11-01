@@ -299,6 +299,11 @@ def PrintCurrentMonthStats(monthDateList, monthDistanceList, monthTotDist, month
 		print "%d)  %s  %5.2fkms  %s mins/km" %((i+1), monthDateList[i].strftime('%d/%m/%Y'), monthDistanceList[i], monthIndAvgPace[i].strftime('%M.%S'))
 	DistPaceGraph(monthDateList, monthIndAvgPace, monthDistanceList, "Runs this month", "Date", "Pace (secs/km)", "Distance (km)")	
 
+def PrintNoRunsThisMonth():
+	print "\n----- This month -----"
+	print "----------------------"
+	print "You have not run yet this month."
+
 def PrintLastRunComparison(lrPace, lrDate, sdPace, sdDate, lrPosit, distRange):
 	print "\n----- Last run comparison -----"
 	print "-------------------------------"
@@ -338,8 +343,11 @@ if __name__ == '__main__':
 
 		# Calculate current month's statistics
 		# ------------------------------------
-		monthDateList, monthDistanceList, monthTotDist, monthTotRuns, monthAvgDist, monthTotTime, monthTotAvgPace, monthIndAvgPace = ThisMonth()
-		PrintCurrentMonthStats(monthDateList, monthDistanceList, monthTotDist, monthTotRuns, monthAvgDist, monthTotTime, monthTotAvgPace, monthIndAvgPace)
+		if (date.today().year == dateList[-1].year and date.today().month == dateList[-1].month):
+			monthDateList, monthDistanceList, monthTotDist, monthTotRuns, monthAvgDist, monthTotTime, monthTotAvgPace, monthIndAvgPace = ThisMonth()
+			PrintCurrentMonthStats(monthDateList, monthDistanceList, monthTotDist, monthTotRuns, monthAvgDist, monthTotTime, monthTotAvgPace, monthIndAvgPace)
+		else:
+			PrintNoRunsThisMonth()
 
 
 		# Compare last run to similar run distance
