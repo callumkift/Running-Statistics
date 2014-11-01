@@ -98,7 +98,6 @@ def ReadData():
 		else:
 			return "noRead"
 
-
 def Hour2Seconds(fullTime):
 	"""Converts time format (hh, mm, ss) into seconds."""
 	secs = fullTime.second
@@ -321,7 +320,7 @@ def PrintLastRunComparison(lrPace, lrDate, sdPace, sdDate, lrPosit, distRange):
 		print "CONGRATULATIONS! Your last run on %s was your best pace for the distance %s.\n" %(lrDate.strftime('%d/%m/%Y'), distRange)
 	else:
 		lr_bp = LastRunBestPace(sdPace[0], distanceList[-1])
-		print "Your last run on %s is ranked #%d for your best pace for the distance %s. If you had run at your best pace for this distance, your last run would have taken %s.\n" %(lrDate.strftime('%d/%m/%Y'), lrPosit, distRange, lr_bp.isoformat())
+		print "Your last run on %s is ranked #%d for your best pace for the distance %s. If you had run at your best pace for this distance, your last run would have taken %s minutes less.\n" %(lrDate.strftime('%d/%m/%Y'), lrPosit, distRange, Seconds2Hours(Hour2Seconds(timeList[-1]) - Hour2Seconds(lr_bp)).strftime('%M.%S'))
 	for i in range(len(sdPace)):
 		print "%3d) %s mins/km on %s" %((i+1), Seconds2Hours(sdPace[i]).strftime('%M.%S'), sdDate[i].strftime('%d/%m/%Y'))
 
