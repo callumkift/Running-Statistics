@@ -175,6 +175,34 @@ def ThisMonth():
 	monthTotAvgPace = monthTotSecs/monthTotDist
 	return monthDate, monthDistance, monthTotDist, monthTotRuns, monthAvgDist, Seconds2Hours(monthTotSecs), Seconds2Hours(monthTotAvgPace), monthRunAvgPace
 
+def LastMonth():
+	"""Calculates statistics for the previous month"""
+
+	monthTotDist = 0
+	monthTotSecs = 0
+	monthTotRuns = 0 
+
+	lastMonthNum = date.today().month
+
+	for i in range(len(dateList)):
+		if (lastMonthNum == 1):
+			if (dateList[i].year + 1 == date.today().year and dateList[i].month == 12):
+			# This is incase we are in January - i.e. the previous month is from a different year
+		
+				monthTotDist += distanceList[i]
+				monthTotSecs += Hour2Seconds(timeList[i])
+				monthTotRuns += 1
+		else:	
+			if (date.today().month -1 == dateList[i].month and date.today().year == dateList[i].year):
+							
+				monthTotDist += distanceList[i]
+				monthTotSecs += Hour2Seconds(timeList[i])
+				monthTotRuns += 1
+
+	monthAvgDist = monthTotDist/monthTotRuns
+	monthTotAvgPace = monthTotSecs/monthTotDist
+	return monthTotDist, monthTotRuns, monthAvgDist, Seconds2Hours(monthTotSecs), Seconds2Hours(monthTotAvgPace)	
+
 def DistPaceGraph(x_dateList, y1_paceList, y2_distList, graph_title, graph_xaxis, graph_y1axis, graph_y2axis):
 	"""Creates a graph showing the distance of each run and the average pace
 		of it."""
@@ -283,35 +311,47 @@ def PrintTotalStats(totalBestDist, totalBestPace, totalLongRun, totalDistance, t
 	print "You have run a total of %d times." %totalNumberOfRuns
 	print "You run an average of %.2fkms." %totalAverageDistance
 	print "You have run for a total of %s hrs." %totalRunTime.isoformat()
-	print "You run with an average pace of %s mins/km." %totalAveragePace.strftime('%M.%S')
+	print "You run with an average pace of %s mins/km.\n" %totalAveragePace.strftime('%M.%S')
 
-	print "\nYour furthest run was %.2fkms on %s with an average pace of %s mins/km." %(distanceList[totalBestDist], dateList[totalBestDist].strftime('%d/%m/%Y'), paceList[totalBestDist].strftime('%M.%S'))
-	print "Your longest run was %shrs on %s where you ran %.2fkms at an average pace of %s mins/km." %(timeList[totalLongRun].isoformat(), dateList[totalLongRun].strftime('%d/%m/%Y'), distanceList[totalLongRun], paceList[totalLongRun].strftime('%M.%S'))
-	print "Your best pace was %s mins/km on %s for a distance of %.2fkms." %(paceList[totalBestPace].strftime('%M.%S'), dateList[totalBestPace].strftime('%d/%m/%Y'), distanceList[totalBestPace])
+	print "*** Your furthest run was %.2fkms on %s with an average pace of %s mins/km.\n" %(distanceList[totalBestDist], dateList[totalBestDist].strftime('%d/%m/%Y'), paceList[totalBestDist].strftime('%M.%S'))
+	print "*** Your longest run was %shrs on %s where you ran %.2fkms at an average pace of %s mins/km.\n" %(timeList[totalLongRun].isoformat(), dateList[totalLongRun].strftime('%d/%m/%Y'), distanceList[totalLongRun], paceList[totalLongRun].strftime('%M.%S'))
+	print "*** Your best pace was %s mins/km on %s for a distance of %.2fkms." %(paceList[totalBestPace].strftime('%M.%S'), dateList[totalBestPace].strftime('%d/%m/%Y'), distanceList[totalBestPace])
 	DistPaceGraph(dateList, paceList, distanceList, "All runs", "Date", "Pace (secs/km)", "Distance (km)")
 
 def PrintCurrentMonthStats(monthDateList, monthDistanceList, monthTotDist, monthTotRuns, monthAvgDist, monthTotTime, monthTotAvgPace, monthIndAvgPace ):
 	print "\n----- This month -----"
 	print "----------------------"
-	print "You have run a total distance of %.2fkms." %monthTotDist
-	print "You have run a total of %d times." %monthTotRuns
-	print "You run an average of %.2fkms." %monthAvgDist
-	print "You have run for a total of %s hrs." %monthTotTime.isoformat()
-	print "You have run with an average pace of %s mins/km.\n" %monthTotAvgPace.strftime('%M.%S')
-	for i in range(len(monthDateList)):
-		print "%2d)  %s  %5.2fkms  %s mins/km" %((i+1), monthDateList[i].strftime('%d/%m/%Y'), monthDistanceList[i], monthIndAvgPace[i].strftime('%M.%S'))
-	DistPaceGraph(monthDateList, monthIndAvgPace, monthDistanceList, "Runs this month", "Date", "Pace (secs/km)", "Distance (km)")	
+	if monthTotRuns == 0:
+		print "You have not run yet this month."
+	elif monthTotRuns == 1:
+		print "You have run only once this month on %s for %.2fkms at a pace of %s mins/km." %(dateList[-1].strftime('%d/%m/%Y'), distanceList[-1], paceList[-1].strftime('%M.%S'))
+	else:
+		print "You have run a total distance of %.2fkms." %monthTotDist
+		print "You have run a total of %d times." %monthTotRuns
+		print "You run an average of %.2fkms." %monthAvgDist
+		print "You have run for a total of %s hrs." %monthTotTime.isoformat()
+		print "You have run with an average pace of %s mins/km.\n" %monthTotAvgPace.strftime('%M.%S')
+		for i in range(len(monthDateList)):
+			print "%2d)  %s  %5.2fkms  %s mins/km" %((i+1), monthDateList[i].strftime('%d/%m/%Y'), monthDistanceList[i], monthIndAvgPace[i].strftime('%M.%S'))
+		DistPaceGraph(monthDateList, monthIndAvgPace, monthDistanceList, "Runs this month", "Date", "Pace (secs/km)", "Distance (km)")	
 
-def PrintNoRunsThisMonth():
-	print "\n----- This month -----"
-	print "----------------------"
-	print "You have not run yet this month."
-
-def PrintSingleRunMonth():
-	print "\n----- This month -----"
-	print "----------------------"
-	print "You have run only once this month on %s for %.2fkms at a pace of %s mins/km." %(dateList[-1].strftime('%d/%m/%Y'), distanceList[-1], paceList[-1].strftime('%M.%S'))
-
+def PrintLastMonthThisMonthStats(lastMonthTotDist, lastMonthTotRuns, lastMonthAvgDist, lastMonthTotTime, lastMonthTotAvgPace, monthTotDist, monthTotRuns, monthAvgDist, monthTotTime, monthTotAvgPace):
+	print "\n----- Last Month vs This Month -----"
+	print "------------------------------------"
+	if monthTotRuns == 0 and lastMonthTotRuns == 0:
+		print "You have not run this month or last month. Get off your arse!"
+	elif monthTotRuns == 0 and lastMonthTotRuns != 0:
+		print "You have not run this month, last month you ran %d times." %lastMonthTotRuns
+	elif lastMonthTotRuns == 0 and monthTotRuns != 0:
+		print "You did not run last month, but you have already run %d times this month." %monthTotRuns
+	else:
+		print "\n                   |  Last  Month  |  This  Month  "
+		print "---------------------------------------------------"
+		print "Number of runs     |  %2d           | %2d"		%(lastMonthTotRuns, monthTotRuns)
+		print "Total distance     | %3.2f kms     | %3.2f kms"	%(lastMonthTotDist, monthTotDist)
+		print "Average distance   | %2.2f kms      | %2.2f kms"	%(lastMonthAvgDist, monthAvgDist)
+		print "Total time         | %s hrs  | %s hrs"			%(lastMonthTotTime.isoformat(), monthTotTime.isoformat())
+		print "Averge pace        | %s mins/km | %s mins/km"	%(lastMonthTotAvgPace.strftime('%M.%S'), monthTotAvgPace.strftime('%M.%S'))
 
 def PrintLastRunComparison(lrPace, lrDate, sdPace, sdDate, lrPosit, distRange):
 	print "\n----- Last run comparison -----"
@@ -350,24 +390,21 @@ if __name__ == '__main__':
 			# ----------------------------------------
 			lrPace, lrDate, sdPace, sdDate, lrPosit, distRange = LastRunComparison()
 			PrintLastRunComparison(lrPace, lrDate, sdPace, sdDate, lrPosit, distRange)
-			
+
 			# Calculate current month's statistics
 			# ------------------------------------
-			if (date.today().year == dateList[-1].year and date.today().month == dateList[-1].month):
-				monthDateList, monthDistanceList, monthTotDist, monthTotRuns, monthAvgDist, monthTotTime, monthTotAvgPace, monthIndAvgPace = ThisMonth()
-				if monthTotRuns == 1:
-					PrintSingleRunMonth()
-				else:
-					PrintCurrentMonthStats(monthDateList, monthDistanceList, monthTotDist, monthTotRuns, monthAvgDist, monthTotTime, monthTotAvgPace, monthIndAvgPace)
-			else:
-				PrintNoRunsThisMonth()
-				
+			monthDateList, monthDistanceList, monthTotDist, monthTotRuns, monthAvgDist, monthTotTime, monthTotAvgPace, monthIndAvgPace = ThisMonth()
+			PrintCurrentMonthStats(monthDateList, monthDistanceList, monthTotDist, monthTotRuns, monthAvgDist, monthTotTime, monthTotAvgPace, monthIndAvgPace)
+
+			# This month vs last month
+			# ----------------------------
+			lmonthTotDist, lmonthTotRuns, lmonthAvgDist, lmonthTotTime, lmonthTotAvgPace = LastMonth()
+			PrintLastMonthThisMonthStats(lmonthTotDist, lmonthTotRuns, lmonthAvgDist, lmonthTotTime, lmonthTotAvgPace, monthTotDist, monthTotRuns, monthAvgDist, monthTotTime, monthTotAvgPace)
+
 			# Calculate total statistics
 			# --------------------------
 			totalBestDist, totalBestPace, totalLongRun, totalDistance, totalNumberOfRuns, totalAverageDistance, totalRunTime, totalAveragePace = CalculateTotal()
 			PrintTotalStats(totalBestDist, totalBestPace, totalLongRun, totalDistance, totalNumberOfRuns, totalAverageDistance, totalRunTime, totalAveragePace)
-
-
 
 		else:
 			print "\nYou need to add runs to view stats."
