@@ -346,11 +346,11 @@ if __name__ == '__main__':
 			print "----------------------------------"
 			print "----------------------------------\n"
 
-			# Calculate total statistics
-			# --------------------------
-			totalBestDist, totalBestPace, totalLongRun, totalDistance, totalNumberOfRuns, totalAverageDistance, totalRunTime, totalAveragePace = CalculateTotal()
-			PrintTotalStats(totalBestDist, totalBestPace, totalLongRun, totalDistance, totalNumberOfRuns, totalAverageDistance, totalRunTime, totalAveragePace)
-
+			# Compare last run to similar run distance
+			# ----------------------------------------
+			lrPace, lrDate, sdPace, sdDate, lrPosit, distRange = LastRunComparison()
+			PrintLastRunComparison(lrPace, lrDate, sdPace, sdDate, lrPosit, distRange)
+			
 			# Calculate current month's statistics
 			# ------------------------------------
 			if (date.today().year == dateList[-1].year and date.today().month == dateList[-1].month):
@@ -361,12 +361,14 @@ if __name__ == '__main__':
 					PrintCurrentMonthStats(monthDateList, monthDistanceList, monthTotDist, monthTotRuns, monthAvgDist, monthTotTime, monthTotAvgPace, monthIndAvgPace)
 			else:
 				PrintNoRunsThisMonth()
+				
+			# Calculate total statistics
+			# --------------------------
+			totalBestDist, totalBestPace, totalLongRun, totalDistance, totalNumberOfRuns, totalAverageDistance, totalRunTime, totalAveragePace = CalculateTotal()
+			PrintTotalStats(totalBestDist, totalBestPace, totalLongRun, totalDistance, totalNumberOfRuns, totalAverageDistance, totalRunTime, totalAveragePace)
 
 
-			# Compare last run to similar run distance
-			# ----------------------------------------
-			lrPace, lrDate, sdPace, sdDate, lrPosit, distRange = LastRunComparison()
-			PrintLastRunComparison(lrPace, lrDate, sdPace, sdDate, lrPosit, distRange)
+
 		else:
 			print "\nYou need to add runs to view stats."
 			print "Goodbye."
