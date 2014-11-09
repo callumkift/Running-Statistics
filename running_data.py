@@ -244,7 +244,7 @@ def LastRunComparison():
 	sameDistListDate = [lastRunDate]
 	sameDistListPace = [lastRunAvgPaceSecs]
 
-	for i in range(len(dateList)-1):
+	for i in range(len(dateList)):
 		if (distanceList[i] < 4.0 and lastRunDistance < 4.0):
 			pace = Hour2Seconds(timeList[i])/distanceList[i]
 			sameDistListDate.append(dateList[i])
@@ -291,7 +291,7 @@ def LastRunComparison():
 			sameDistListPace.append(pace)
 			distRangeString = "more than 50km"
 
-	sameDistListPace, sameDistListDate = (list(t) for t in zip(*sorted(zip(sameDistListPace, sameDistListDate))))
+	sameDistListPace, sameDistListDate = (list(t) for t in zip(*sorted(zip(sameDistListPace[0:-1], sameDistListDate[0:-1]))))
 	pacePosit = 0
 	for i in range(len(sameDistListDate)):
 		if lastRunDate == sameDistListDate[i]:
