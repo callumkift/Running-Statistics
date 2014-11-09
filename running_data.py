@@ -364,18 +364,20 @@ def PrintLastMonthThisMonthStats(lastMonthTotDist, lastMonthTotRuns, lastMonthAv
 def PrintLastRunComparison(lrPace, lrDate, sdPace, sdDate, lrPosit, distRange):
 	print "\n----- Last run comparison -----"
 	print "-------------------------------"
-	lr_bp = LastRunBestPace(sdPace[0], distanceList[-1])
-	lr_ap = LastRunAvgPace(sdPace,distanceList[-1])
-	if lrPosit == 1:
-		print "*** CONGRATULATIONS! Your last run on %s was your best pace for the distance %s.\n" %(lrDate.strftime('%d/%m/%Y'), distRange)
+	if len(sdPace) != 1:
+		lr_bp = LastRunBestPace(sdPace[0], distanceList[-1])
+		lr_ap = LastRunAvgPace(sdPace,distanceList[-1])
+		if lrPosit == 1:
+			print "*** CONGRATULATIONS! Your last run on %s was your best pace for the distance %s.\n" %(lrDate.strftime('%d/%m/%Y'), distRange)
+		else:
+			print "*** Your last run on %s is ranked #%d for your best pace for the distance %s.\n" %(lrDate.strftime('%d/%m/%Y'), lrPosit, distRange)
+			print "*** If you had run at your best pace for this distance, your last run would have taken %s minutes less.\n" %(Seconds2Hours(Hour2Seconds(timeList[-1]) - Hour2Seconds(lr_bp)).strftime('%M.%S'))
+		if (Hour2Seconds(lr_ap) < Hour2Seconds(timeList[-1])):
+			print "*** If you had run at your average pace for this distance, yout last run would have taken %s minutes less." %(Seconds2Hours(abs(Hour2Seconds(timeList[-1]) - Hour2Seconds(lr_ap))).strftime('%M.%S'))
+		else:
+			print "*** Your run took %s minutes less than if you had run at your average pace for this distance." %(Seconds2Hours(abs(Hour2Seconds(timeList[-1]) - Hour2Seconds(lr_ap))).strftime('%M.%S'))
 	else:
-		print "*** Your last run on %s is ranked #%d for your best pace for the distance %s.\n" %(lrDate.strftime('%d/%m/%Y'), lrPosit, distRange)
-		print "*** If you had run at your best pace for this distance, your last run would have taken %s minutes less.\n" %(Seconds2Hours(Hour2Seconds(timeList[-1]) - Hour2Seconds(lr_bp)).strftime('%M.%S'))
-	if (Hour2Seconds(lr_ap) < Hour2Seconds(timeList[-1])):
-		print "*** If you had run at your average pace for this distance, yout last run would have taken %s minutes less." %(Seconds2Hours(abs(Hour2Seconds(timeList[-1]) - Hour2Seconds(lr_ap))).strftime('%M.%S'))
-	else:
-		print "*** Your run took %s minutes less than if you had run at your average pace for this distance." %(Seconds2Hours(abs(Hour2Seconds(timeList[-1]) - Hour2Seconds(lr_ap))).strftime('%M.%S'))
-
+		print "*** CONGRATULATIONS! This is your first run for the distance %s.\n"%distRange
 
 if __name__ == '__main__':
 
