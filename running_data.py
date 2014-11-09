@@ -224,7 +224,7 @@ def DistPaceGraph(x_dateList, y1_paceList, y2_distList, graph_title, graph_xaxis
 		tl.set_color('r')
 
 	ax2 = ax1.twinx()
-	ax2.plot(dates, y2_distList, 'bo')
+	ax2.plot(dates, y2_distList, 'b--o')
 	ax2.set_ylabel(graph_y2axis, color='b')
 	ax2.set_ylim([(min(y2_distList)-0.5), (max(y2_distList)+0.5)])
 	for tl in ax2.get_yticklabels():
@@ -364,11 +364,11 @@ def PrintLastMonthThisMonthStats(lastMonthTotDist, lastMonthTotRuns, lastMonthAv
 def PrintLastRunComparison(lrPace, lrDate, sdPace, sdDate, lrPosit, distRange):
 	print "\n----- Last run comparison -----"
 	print "-------------------------------"
+	lr_bp = LastRunBestPace(sdPace[0], distanceList[-1])
+	lr_ap = LastRunAvgPace(sdPace,distanceList[-1])
 	if lrPosit == 1:
 		print "*** CONGRATULATIONS! Your last run on %s was your best pace for the distance %s.\n" %(lrDate.strftime('%d/%m/%Y'), distRange)
 	else:
-		lr_bp = LastRunBestPace(sdPace[0], distanceList[-1])
-		lr_ap = LastRunAvgPace(sdPace,distanceList[-1])
 		print "*** Your last run on %s is ranked #%d for your best pace for the distance %s.\n" %(lrDate.strftime('%d/%m/%Y'), lrPosit, distRange)
 		print "*** If you had run at your best pace for this distance, your last run would have taken %s minutes less.\n" %(Seconds2Hours(Hour2Seconds(timeList[-1]) - Hour2Seconds(lr_bp)).strftime('%M.%S'))
 	if (Hour2Seconds(lr_ap) < Hour2Seconds(timeList[-1])):
