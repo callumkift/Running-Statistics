@@ -27,7 +27,7 @@
 
 import os.path
 import re
-from datetime import date, time, datetime
+from datetime import date, time, datetime, timedelta
 from array import array
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
@@ -203,7 +203,7 @@ def LastMonth():
 	monthTotAvgPace = monthTotSecs/monthTotDist
 	return monthTotDist, monthTotRuns, monthAvgDist, Seconds2Hours(monthTotSecs), Seconds2Hours(monthTotAvgPace)	
 
-def DistPaceGraph(x_dateList, y1_paceList, y2_distList, graph_title, graph_xaxis, graph_y1axis, graph_y2axis):
+def DistPaceGraph(x_dateList, y1_paceList, y2_distList, graph_title, graph_xaxis, graph_y1axis, graph_y2axis, graph_type):
 	"""Creates a graph showing the distance of each run and the average pace
 		of it."""
 	dt = datetime.now()
@@ -212,24 +212,36 @@ def DistPaceGraph(x_dateList, y1_paceList, y2_distList, graph_title, graph_xaxis
 	paces = [Hour2Seconds(time) for time in y1_paceList]
 
 	fig, ax1 = plt.subplots()
-	ax1.plot(dates, paces, '#FFD6D6')
+	ax1.plot(dates, paces, '#FAC8CA')
 	ax1.set_title(graph_title)
 	ax1.set_xlabel(graph_xaxis)
-	ax1.xaxis.set_major_formatter(mdates.DateFormatter('%d/%m/%Y'))
-	ax1.set_ylim([(min(paces)-10), (max(paces)+10)])
+	ax1.set_ylim([(min(paces)-60), (max(paces)+60)])
 	ax1.set_ylabel(graph_y1axis, color='r')
-	ax1.set_xlim([(min(dates)), (max(dates))])
 	ax1.fill_between(dates, paces, color='#FCE6E6')
 	for tl in ax1.get_yticklabels():
 		tl.set_color('r')
 
 	ax2 = ax1.twinx()
-	ax2.plot(dates, y2_distList, 'b--o')
+	ax2.vlines(dates, 0, y2_distList, 'b')
 	ax2.set_ylabel(graph_y2axis, color='b')
-	ax2.set_ylim([(min(y2_distList)-0.5), (max(y2_distList)+0.5)])
+	ax2.set_ylim([0, (max(y2_distList)+0.5)])
 	for tl in ax2.get_yticklabels():
 		tl.set_color('b')
+
+	if graph_type == "month":
+		ax2.xaxis.set_major_formatter(mdates.DayLocator())
+		ax2.xaxis.set_major_formatter(mdates.DateFormatter('%d/%m'))
+		dates.append(mdates.date2num(mdates.num2date(min(dates))-timedelta(hours=6)))
+		dates.append(mdates.date2num(mdates.num2date(max(dates))+timedelta(hours=6)))
+		ax2.set_xlim([(mdates.num2date(min(dates))), (mdates.num2date(max(dates)))])
+	elif graph_type == "all":
+		ax2.xaxis.set_major_formatter(mdates.MonthLocator())
+		ax2.xaxis.set_major_formatter(mdates.DateFormatter('%m/%Y'))
+		dates.append(mdates.date2num(mdates.num2date(min(dates))-timedelta(days=3)))
+		dates.append(mdates.date2num(mdates.num2date(max(dates))+timedelta(days=3)))
+		ax2.set_xlim([(mdates.num2date(min(dates))), (mdates.num2date(max(dates)))])
 	plt.show()
+
 
 def LastRunComparison():
 	"""This compares the last run with other runs you have done of a similar distance. These distances will be
@@ -324,7 +336,7 @@ def PrintTotalStats(totalBestDist, totalBestPace, totalLongRun, totalDistance, t
 	print "*** Your furthest run was %.2fkms on %s with an average pace of %s mins/km.\n" %(distanceList[totalBestDist], dateList[totalBestDist].strftime('%d/%m/%Y'), paceList[totalBestDist].strftime('%M.%S'))
 	print "*** Your longest run was %shrs on %s where you ran %.2fkms at an average pace of %s mins/km.\n" %(timeList[totalLongRun].isoformat(), dateList[totalLongRun].strftime('%d/%m/%Y'), distanceList[totalLongRun], paceList[totalLongRun].strftime('%M.%S'))
 	print "*** Your best pace was %s mins/km on %s for a distance of %.2fkms." %(paceList[totalBestPace].strftime('%M.%S'), dateList[totalBestPace].strftime('%d/%m/%Y'), distanceList[totalBestPace])
-	DistPaceGraph(dateList, paceList, distanceList, "All runs", "Date", "Pace (secs/km)", "Distance (km)")
+	DistPaceGraph(dateList, paceList, distanceList, "All runs", "Date", "Pace (secs/km)", "Distance (km)", "all")
 
 def PrintCurrentMonthStats(monthDateList, monthDistanceList, monthTotDist, monthTotRuns, monthAvgDist, monthTotTime, monthTotAvgPace, monthIndAvgPace ):
 	print "\n----- This month -----"
@@ -341,7 +353,7 @@ def PrintCurrentMonthStats(monthDateList, monthDistanceList, monthTotDist, month
 		print "You have run with an average pace of %s mins/km.\n" %monthTotAvgPace.strftime('%M.%S')
 		for i in range(len(monthDateList)):
 			print "%2d)  %s  %5.2fkms  %s mins/km" %((i+1), monthDateList[i].strftime('%d/%m/%Y'), monthDistanceList[i], monthIndAvgPace[i].strftime('%M.%S'))
-		DistPaceGraph(monthDateList, monthIndAvgPace, monthDistanceList, "Runs this month", "Date", "Pace (secs/km)", "Distance (km)")	
+		DistPaceGraph(monthDateList, monthIndAvgPace, monthDistanceList, "Runs this month", "Date", "Pace (secs/km)", "Distance (km)", "month")	
 
 def PrintLastMonthThisMonthStats(lastMonthTotDist, lastMonthTotRuns, lastMonthAvgDist, lastMonthTotTime, lastMonthTotAvgPace, monthTotDist, monthTotRuns, monthAvgDist, monthTotTime, monthTotAvgPace):
 	print "\n----- Last Month vs This Month -----"
