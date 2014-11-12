@@ -235,8 +235,8 @@ def DistPaceGraph(x_dateList, y1_paceList, y2_distList, graph_title, graph_xaxis
 		dates.append(mdates.date2num(mdates.num2date(max(dates))+timedelta(hours=6)))
 		ax2.set_xlim([(mdates.num2date(min(dates))), (mdates.num2date(max(dates)))])
 	elif graph_type == "all":
-		ax2.xaxis.set_major_formatter(mdates.MonthLocator())
-		ax2.xaxis.set_major_formatter(mdates.DateFormatter('%m/%Y'))
+		ax2.xaxis.set_major_formatter(mdates.AutoDateLocator())
+		ax2.xaxis.set_major_formatter(mdates.DateFormatter('%d/%m/%Y'))
 		dates.append(mdates.date2num(mdates.num2date(min(dates))-timedelta(days=3)))
 		dates.append(mdates.date2num(mdates.num2date(max(dates))+timedelta(days=3)))
 		ax2.set_xlim([(mdates.num2date(min(dates))), (mdates.num2date(max(dates)))])
