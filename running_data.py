@@ -43,6 +43,28 @@ def AddRun():
 	else:
 		return "noAdd"
 
+def ValidateDate(date_text):
+	try:
+		datetime.strptime(date_text, '%d/%m/%Y')
+		return True
+	except ValueError:
+		print "\n*** Incorrect date fromat ***\n"
+			
+def ValidateDistance(distance_text):
+	try:
+		float(distance_text)
+		return True
+	except ValueError:
+		print "\n*** Incorrect distance fromat ***\n"
+		
+	
+def ValidateTime(time_text):
+	try:
+		datetime.strptime(time_text, '%H:%M:%S')
+		return True
+	except ValueError:
+		print "\n*** Incorrect time format ***\n"
+
 def WriteRunToFile():
 	""""Runs when user wants to add a run to file. Finds the file and then asks the
 		user to input data and writes to file. If it is their first run, then it will
@@ -60,9 +82,18 @@ def WriteRunToFile():
 	run_distance = raw_input("\nHow far did you run? (km)\n")
 	run_time = raw_input("\nHow long did you run for? (HH:MM:SS)\n") 
 
-	f.write("\n" + run_date + " " + run_distance + " " + run_time) 
-	f.close
-	return
+	if (ValidateDate(run_date) and ValidateDistance(run_distance) and ValidateTime(run_time)):
+		f.write("\n" + run_date + " " + run_distance + " " + run_time) 
+		f.close
+		return
+	else:
+		retry = raw_input("\nInput again? (y/n)\n")
+		if (retry == 'y' or retry == 'Y'):
+			f.close
+			WriteRunToFile()
+		else:
+			f.close
+			return
 
 def ViewStats():
 	"""Asks user if they want to view their stats, if yes then it runs ReadData()"""
