@@ -229,9 +229,12 @@ def LastMonth():
 				monthTotDist += distanceList[i]
 				monthTotSecs += Hour2Seconds(timeList[i])
 				monthTotRuns += 1
-
-	monthAvgDist = monthTotDist/monthTotRuns
-	monthTotAvgPace = monthTotSecs/monthTotDist
+	if monthTotRuns != 0:
+		monthAvgDist = monthTotDist/monthTotRuns
+		monthTotAvgPace = monthTotSecs/monthTotDist
+	else:
+		monthAvgDist = 0
+		monthTotAvgPace = 0
 	return monthTotDist, monthTotRuns, monthAvgDist, Seconds2Hours(monthTotSecs), Seconds2Hours(monthTotAvgPace)	
 
 def DistPaceGraph(x_dateList, y1_paceList, y2_distList, graph_title, graph_xaxis, graph_y1axis, graph_y2axis, graph_type):
@@ -420,7 +423,7 @@ def PrintLastMonthThisMonthStats(lastMonthTotDist, lastMonthTotRuns, lastMonthAv
 	elif monthTotRuns == 0 and lastMonthTotRuns != 0:
 		print "You have not run this month, last month you ran %d times." %lastMonthTotRuns
 	elif lastMonthTotRuns == 0 and monthTotRuns != 0:
-		print "You did not run last month, but you have already run %d times this month." %monthTotRuns
+		print "You did not run last month, but you have already run %d time(s) this month." %monthTotRuns
 	else:
 		print "\n                   |  Last  Month  |  This  Month  "
 		print "---------------------------------------------------"
