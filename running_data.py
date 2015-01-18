@@ -228,9 +228,9 @@ def ThisYear():
 			yearTotSecs += Hour2Seconds(timeList[i])
 			yearTotRuns += 1
 
-		yearAvgDist = yearTotDist/yearTotRuns
-		yearTotAvgPace = yearTotSecs/yearTotDist
-		return yearDate, yearDistance, yearTotDist, yearTotRuns, yearAvgDist, Seconds2Hours(yearTotSecs), Seconds2Hours(yearTotAvgPace), yearRunAvgPace
+	yearAvgDist = yearTotDist/yearTotRuns
+	yearTotAvgPace = yearTotSecs/yearTotDist
+	return yearDate, yearDistance, yearTotDist, yearTotRuns, yearAvgDist, Seconds2Hours(yearTotSecs), Seconds2Hours(yearTotAvgPace), yearRunAvgPace
 
 
 
@@ -294,7 +294,7 @@ def DistPaceGraph(x_dateList, y1_paceList, y2_distList, graph_title, graph_xaxis
 		dates.append(mdates.date2num(mdates.num2date(min(dates))-timedelta(hours=6)))
 		dates.append(mdates.date2num(mdates.num2date(max(dates))+timedelta(hours=6)))
 		ax2.set_xlim([(mdates.num2date(min(dates))), (mdates.num2date(max(dates)))])
-	elif graph_type == "all":
+	elif graph_type == "all" or graph_type == "year":
 		ax2.xaxis.set_major_formatter(mdates.MonthLocator())
 		ax2.xaxis.set_major_formatter(mdates.DateFormatter('%m/%Y'))
 		dates.append(mdates.date2num(mdates.num2date(min(dates))-timedelta(days=3)))
