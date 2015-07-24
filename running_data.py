@@ -4,31 +4,32 @@
 #
 #  This script was created so that a runner can gain
 #  more insights into their runs.
-# 
-#  Creator: Callum Kift                              
-#  email: callumkift@gmail.com                       
 #
-# 
+#  Creator: Callum Kift
+#  email: callumkift@gmail.com
+#
+#
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 # MA 02110-1301, USA.
-# 
+#
 
 import os.path
 import re
 from datetime import date, time, datetime, timedelta
 from array import array
+import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 
@@ -39,9 +40,9 @@ def AddRun():
 	if (add_run == "y" or add_run == "Y"):
 		#print "yes detected"
 		WriteRunToFile()
-		return "add"
+		return True
 	else:
-		return "noAdd"
+		return False
 
 def ValidateDate(date_text):
 	try:
@@ -49,15 +50,14 @@ def ValidateDate(date_text):
 		return True
 	except ValueError:
 		print "\n*** Incorrect date fromat ***\n"
-			
+
 def ValidateDistance(distance_text):
 	try:
 		float(distance_text)
 		return True
 	except ValueError:
 		print "\n*** Incorrect distance fromat ***\n"
-		
-	
+
 def ValidateTime(time_text):
 	try:
 		datetime.strptime(time_text, '%H:%M:%S')
@@ -71,7 +71,7 @@ def WriteRunToFile():
 		create the file before asking the user for their run data and writing it to
 		file."""
 	if (os.path.isfile("past_runs.txt")): # finds file and opens it
-		f = open("past_runs.txt", "a") 
+		f = open("past_runs.txt", "a")
 	else: # creates file if it doesn't exist
 		f = open("past_runs.txt", "w")
 		f.write("DATE (DD/MM/YYYY) | " + "DISTANE (KM) | " + "TIME (HH:MM:SS) \n")
@@ -80,10 +80,10 @@ def WriteRunToFile():
 
 	run_date = raw_input("\nWhat was the date of the run? (DD/MM/YYYY)\n")
 	run_distance = raw_input("\nHow far did you run? (km)\n")
-	run_time = raw_input("\nHow long did you run for? (HH:MM:SS)\n") 
+	run_time = raw_input("\nHow long did you run for? (HH:MM:SS)\n")
 
 	if (ValidateDate(run_date) and ValidateDistance(run_distance) and ValidateTime(run_time)):
-		f.write("\n" + run_date + " " + run_distance + " " + run_time) 
+		f.write("\n" + run_date + " " + run_distance + " " + run_time)
 		f.close
 		return
 	else:
@@ -99,12 +99,12 @@ def ViewStats():
 	"""Asks user if they want to view their stats, if yes then it runs ReadData()"""
 	view_stats = raw_input("\nDo you want to view your stats? (y/n)\n")
 	if (view_stats == "y" or view_stats == "Y"):
-		return "view"
+		return True
 	else:
-		return "noView"
+		return False
 
 def ReadData():
-	"""Runs when user wants to see their stats. This reads the user's run info and 
+	"""Runs when user wants to see their stats. This reads the user's run info and
 		stores it in a list. If run when no data exists, it will ask user to add data
 		before running again."""
 	if (os.path.isfile("past_runs.txt")):
@@ -113,21 +113,21 @@ def ReadData():
 		underline = f.readline()
 		blank_line = f.readline()
 		for line in f:
-				line = line.strip() 
+				line = line.strip()
 				column = re.split(" |/|:", line)
 				if (len(column) == 7):
 					dateList.append(date(int(column[2]), int(column[1]), int(column[0])))
 					distanceList.append(float(column[3]))
 					timeList.append(time(int(column[4]), int(column[5]), int(column[6]),0))
 					paceList.append(Seconds2Hours(Hour2Seconds(time(int(column[4]), int(column[5]), int(column[6]),0))/float(column[3])))
-		return "read"
+		return True
 	else:
 		print "\n-- It seems that you have no previous runs saved."
 		print "--",
-		if AddRun() == "add":
+		if AddRun():
 			ReadData()
 		else:
-			return "noRead"
+			return False
 
 def Hour2Seconds(fullTime):
 	"""Converts time format (hh, mm, ss) into seconds."""
@@ -177,7 +177,7 @@ def CalculateTotal():
 			longTimeIndex = i
 	avgDist = totDist/totRuns
 	avgPace = totTime/totDist
-	
+
 	return bestDistIndex, bestAvgPaceIndex, longTimeIndex, totDist, totRuns, avgDist, Seconds2Hours(totTime), Seconds2Hours(avgPace)
 
 def ThisMonth():
@@ -189,7 +189,7 @@ def ThisMonth():
 
 	monthTotDist = 0
 	monthTotSecs = 0
-	monthTotRuns = 0 
+	monthTotRuns = 0
 
 	for i in range(len(dateList)):
 		if (date.today().month == dateList[i].month and date.today().year == dateList[i].year):
@@ -197,7 +197,7 @@ def ThisMonth():
 			monthDistance.append(distanceList[i])
 			monthTime.append(timeList[i])
 			monthRunAvgPace.append(paceList[i])
-			
+
 			monthTotDist += distanceList[i]
 			monthTotSecs += Hour2Seconds(timeList[i])
 			monthTotRuns += 1
@@ -215,7 +215,7 @@ def ThisYear():
 
 	yearTotDist = 0
 	yearTotSecs = 0
-	yearTotRuns = 0 
+	yearTotRuns = 0
 
 	for i in range(len(dateList)):
 		if (date.today().year == dateList[i].year):
@@ -223,7 +223,7 @@ def ThisYear():
 			yearDistance.append(distanceList[i])
 			yearTime.append(timeList[i])
 			yearRunAvgPace.append(paceList[i])
-			
+
 			yearTotDist += distanceList[i]
 			yearTotSecs += Hour2Seconds(timeList[i])
 			yearTotRuns += 1
@@ -239,7 +239,7 @@ def LastMonth():
 
 	monthTotDist = 0
 	monthTotSecs = 0
-	monthTotRuns = 0 
+	monthTotRuns = 0
 
 	lastMonthNum = date.today().month
 
@@ -247,13 +247,13 @@ def LastMonth():
 		if (lastMonthNum == 1):
 			if (dateList[i].year + 1 == date.today().year and dateList[i].month == 12):
 			# This is incase we are in January - i.e. the previous month is from a different year
-		
+
 				monthTotDist += distanceList[i]
 				monthTotSecs += Hour2Seconds(timeList[i])
 				monthTotRuns += 1
-		else:	
+		else:
 			if (date.today().month -1 == dateList[i].month and date.today().year == dateList[i].year):
-							
+
 				monthTotDist += distanceList[i]
 				monthTotSecs += Hour2Seconds(timeList[i])
 				monthTotRuns += 1
@@ -263,7 +263,7 @@ def LastMonth():
 	else:
 		monthAvgDist = 0
 		monthTotAvgPace = 0
-	return monthTotDist, monthTotRuns, monthAvgDist, Seconds2Hours(monthTotSecs), Seconds2Hours(monthTotAvgPace)	
+	return monthTotDist, monthTotRuns, monthAvgDist, Seconds2Hours(monthTotSecs), Seconds2Hours(monthTotAvgPace)
 
 def DistPaceGraph(x_dateList, y1_paceList, y2_distList, graph_title, graph_xaxis, graph_y1axis, graph_y2axis, graph_type):
 	"""Creates a graph showing the distance of each run and the average pace
@@ -396,7 +396,7 @@ def LastRunComparison():
 	for i in range(len(sameDistListDateSorted)):
 		if lastRunDate == sameDistListDateSorted[i]:
 			pacePosit = i+1
-		
+
 	return lastRunAvgPaceSecs, lastRunDate, sameDistListPace, sameDistListDate, sameDistListPaceSorted, sameDistListDateSorted, pacePosit, distRangeString
 
 def LastRunBestPace(dbPace, lrDist):
@@ -441,7 +441,7 @@ def PrintCurrentMonthStats(monthDateList, monthDistanceList, monthTotDist, month
 		print "You have run with an average pace of %s mins/km.\n" %monthTotAvgPace.strftime('%M.%S')
 		for i in range(len(monthDateList)):
 			print "%2d)  %s  %5.2fkms  %s mins/km" %((i+1), monthDateList[i].strftime('%d/%m/%Y'), monthDistanceList[i], monthIndAvgPace[i].strftime('%M.%S'))
-		DistPaceGraph(monthDateList, monthIndAvgPace, monthDistanceList, "Runs this month", "Date", "Pace (secs/km)", "Distance (km)", "month")	
+		DistPaceGraph(monthDateList, monthIndAvgPace, monthDistanceList, "Runs this month", "Date", "Pace (secs/km)", "Distance (km)", "month")
 
 def PrintCurrentYearStats(yearDateList, yearDistanceList, yearTotDist, yearTotRuns, yearAvgDist, yearTotTime, yearTotAvgPace, yearIndAvgPace ):
 	print "\n----- This year -----"
@@ -457,7 +457,7 @@ def PrintCurrentYearStats(yearDateList, yearDistanceList, yearTotDist, yearTotRu
 		print "You have run for a total of %s hrs." %yearTotTime.isoformat()
 		print "You have run with an average pace of %s mins/km.\n" %yearTotAvgPace.strftime('%M.%S')
 
-		DistPaceGraph(yearDateList, yearIndAvgPace, yearDistanceList, "Runs this year", "Date", "Pace (secs/km)", "Distance (km)", "year")	
+		DistPaceGraph(yearDateList, yearIndAvgPace, yearDistanceList, "Runs this year", "Date", "Pace (secs/km)", "Distance (km)", "year")
 
 def PrintLastMonthThisMonthStats(lastMonthTotDist, lastMonthTotRuns, lastMonthAvgDist, lastMonthTotTime, lastMonthTotAvgPace, monthTotDist, monthTotRuns, monthAvgDist, monthTotTime, monthTotAvgPace):
 	print "\n----- Last Month vs This Month -----"
@@ -510,8 +510,8 @@ if __name__ == '__main__':
 
 	AddRun()
 
-	if ViewStats() == "view":
-		if ReadData() == "read":
+	if ViewStats():
+		if ReadData():
 			print "\n----------------------------------"
 			print "----------------------------------"
 			print "----------- STATISTICS -----------"
