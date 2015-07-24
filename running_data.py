@@ -477,7 +477,7 @@ def PrintLastMonthThisMonthStats(lastMonthTotDist, lastMonthTotRuns, lastMonthAv
 		print "Total time         | %s hrs  | %s hrs"			%(lastMonthTotTime.isoformat(), monthTotTime.isoformat())
 		print "Averge pace        | %s mins/km | %s mins/km"	%(lastMonthTotAvgPace.strftime('%M.%S'), monthTotAvgPace.strftime('%M.%S'))
 
-def PrintLastRunComparison(lrPace, lrDate, sdPace, sdDate, sdPaceSorted, sdDateSorted, lrPosit, distRange):
+def PrintLastRunComparison():
 	print "\n----- Last run comparison -----"
 	print "-------------------------------"
 	if len(sdPaceSorted) != 1:
@@ -521,7 +521,7 @@ if __name__ == '__main__':
 			# Compare last run to similar run distance
 			# ----------------------------------------
 			lrPace, lrDate, sdPace, sdDate, sdPaceSorted, sdDateSorted, lrPosit, distRange = LastRunComparison()
-			PrintLastRunComparison(lrPace, lrDate, sdPace, sdDate,sdPaceSorted, sdDateSorted, lrPosit, distRange)
+			PrintLastRunComparison()
 
 			# Calculate current month's statistics
 			# ------------------------------------
