@@ -413,7 +413,7 @@ def LastRunAvgPace(sdPace, lrDist):
 	lrAP = (dsTotTime/len(sdPace))*lrDist
 	return Seconds2Hours(lrAP)
 
-def PrintTotalStats(totalBestDist, totalBestPace, totalLongRun, totalDistance, totalNumberOfRuns, totalAverageDistance, totalRunTime, totalAveragePace):
+def PrintTotalStats():
 	print "\n----- Total -----"
 	print "-----------------"
 	print "You have run a total distance of %.2fkms." %totalDistance
@@ -545,7 +545,7 @@ if __name__ == '__main__':
 			# Calculate total statistics
 			# --------------------------
 			totalBestDist, totalBestPace, totalLongRun, totalDistance, totalNumberOfRuns, totalAverageDistance, totalRunTime, totalAveragePace = CalculateTotal()
-			PrintTotalStats(totalBestDist, totalBestPace, totalLongRun, totalDistance, totalNumberOfRuns, totalAverageDistance, totalRunTime, totalAveragePace)
+			PrintTotalStats()
 
 		else:
 			print "\nYou need to add runs to view stats."
