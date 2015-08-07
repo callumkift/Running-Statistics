@@ -202,8 +202,14 @@ def ThisMonth():
 			monthTotSecs += Hour2Seconds(timeList[i])
 			monthTotRuns += 1
 
-	monthAvgDist = monthTotDist/monthTotRuns
-	monthTotAvgPace = monthTotSecs/monthTotDist
+	if monthTotRuns == 0:
+		monthAvgDist = 0
+	else:
+		monthAvgDist = monthTotDist/monthTotRuns
+	if monthTotDist == 0:
+		monthTotAvgPace = 0
+	else:
+		monthTotAvgPace = monthTotSecs/monthTotDist
 	return monthDate, monthDistance, monthTotDist, monthTotRuns, monthAvgDist, Seconds2Hours(monthTotSecs), Seconds2Hours(monthTotAvgPace), monthRunAvgPace
 
 def ThisYear():
@@ -228,8 +234,15 @@ def ThisYear():
 			yearTotSecs += Hour2Seconds(timeList[i])
 			yearTotRuns += 1
 
-	yearAvgDist = yearTotDist/yearTotRuns
-	yearTotAvgPace = yearTotSecs/yearTotDist
+	if yearTotRuns == 0:
+		yearAvgDist = 0
+	else:
+		yearAvgDist = yearTotDist/yearTotRuns
+
+	if yearTotDist == 0:
+		yearTotAvgPace = 0
+	else:
+		yearTotAvgPace = yearTotSecs/yearTotDist
 	return yearDate, yearDistance, yearTotDist, yearTotRuns, yearAvgDist, Seconds2Hours(yearTotSecs), Seconds2Hours(yearTotAvgPace), yearRunAvgPace
 
 
@@ -260,10 +273,14 @@ def LastMonth():
 
 	if monthTotRuns != 0:
 		monthAvgDist = monthTotDist/monthTotRuns
-		monthTotAvgPace = monthTotSecs/monthTotDist
 	else:
 		monthAvgDist = 0
+		
+	if monthTotDist != 0:
+		monthTotAvgPace = monthTotSecs/monthTotDist
+	else:
 		monthTotAvgPace = 0
+
 	return monthTotDist, monthTotRuns, monthAvgDist, Seconds2Hours(monthTotSecs), Seconds2Hours(monthTotAvgPace)
 
 def DistPaceGraph(x_dateList, y1_paceList, y2_distList, graph_title, graph_xaxis, graph_y1axis, graph_y2axis, graph_type):
@@ -477,7 +494,7 @@ def PrintLastMonthThisMonthStats():
 		print "Total distance     | %3.2f kms     | %3.2f kms"	%(lmonthTotDist, monthTotDist)
 		print "Average distance   | %2.2f kms      | %2.2f kms"	%(lmonthAvgDist, monthAvgDist)
 		print "Total time         | %s hrs  | %s hrs"			%(lmonthTotTime.isoformat(), monthTotTime.isoformat())
-		print "Averge pace        | %s mins/km | %s mins/km"	%(lastMonthTotAvgPace.strftime('%M.%S'), monthTotAvgPace.strftime('%M.%S'))
+		print "Averge pace        | %s mins/km | %s mins/km"	%(monthTotAvgPace.strftime('%M.%S'), monthTotAvgPace.strftime('%M.%S'))
 
 def PrintLastRunComparison():
 	print "\n----- Last run comparison -----"
